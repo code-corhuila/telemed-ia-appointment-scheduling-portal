@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+
+import { AppointmentPageComponent } from './pages/appointment-page.component';
+
 import { AppointmentListPageComponent } from './pages/appointment-list-page.component';
 
 /**
@@ -9,6 +12,21 @@ import { AppointmentListPageComponent } from './pages/appointment-list-page.comp
 export const APPOINTMENT_ROUTES: Routes = [
   {
     path: '',
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/appointment-list-page.component').then(
+        (m) => m.AppointmentListPageComponent,
+      ),
+  },
+  {
+    path: 'professional',
+    loadComponent: () =>
+      import('./pages/professional-appointment-list-page.component').then(
+        (m) => m.ProfessionalAppointmentListPageComponent,
+      ),
     component: AppointmentListPageComponent,
   },
 ];
