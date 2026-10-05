@@ -1,0 +1,44 @@
+.dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  min-width: 320px;
+  max-width: 480px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.dialog__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+}
+
+.dialog__subtitle {
+  margin: 0 0 1rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.dialog__options {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.dialog__cancel {
+  width: 100%;
+}
+
+.btn--block {
+  width: 100%;
+}

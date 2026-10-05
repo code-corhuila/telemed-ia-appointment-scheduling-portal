@@ -1,0 +1,19 @@
+name: telemed-ia-appointment-scheduling-portal
+
+services:
+  appointment-portal:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: telemed-ia-appointment-scheduling-portal:local
+    container_name: telemed-ia-appointment-scheduling-portal
+    restart: unless-stopped
+    ports:
+      - "4203:80"
+    networks:
+      - platform
+
+networks:
+  platform:
+    external: true
+    name: platform

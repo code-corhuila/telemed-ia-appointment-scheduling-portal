@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # Node
 node_modules/
 npm-debug.log*
@@ -26,3 +27,15 @@ Thumbs.db
 # Local artifacts
 keys/
 *.ps1
+=======
+node_modules
+dist
+.git
+.github
+.vscode
+.idea
+*.log
+nginx.local.conf
+coverage
+.angular
+>>>>>>> Stashed changes

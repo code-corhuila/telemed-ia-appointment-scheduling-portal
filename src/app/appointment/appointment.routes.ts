@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+<<<<<<< Updated upstream
 import { AppointmentPageComponent } from './pages/appointment-page.component';
 
 /**
@@ -11,5 +12,22 @@ export const APPOINTMENT_ROUTES: Routes = [
   {
     path: '',
     component: AppointmentPageComponent,
+=======
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/appointment-list-page.component').then(
+        (m) => m.AppointmentListPageComponent,
+      ),
+>>>>>>> Stashed changes
+  },
+  {
+    path: 'professional',
+    loadComponent: () =>
+      import('./pages/professional-appointment-list-page.component').then(
+        (m) => m.ProfessionalAppointmentListPageComponent,
+      ),
   },
 ];
