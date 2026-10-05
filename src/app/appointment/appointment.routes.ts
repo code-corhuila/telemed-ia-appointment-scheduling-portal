@@ -13,4 +13,11 @@ export const routes: Routes = [
         (m) => m.AppointmentListPageComponent,
       ),
   },
+  {
+    path: 'professional',
+    loadComponent: () =>
+      import('./pages/professional-appointment-list-page.component').then(
+        (m) => m.ProfessionalAppointmentListPageComponent,
+      ),
+  },
 ];
