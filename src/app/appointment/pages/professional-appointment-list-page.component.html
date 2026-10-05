@@ -1,0 +1,81 @@
+<section class="professional">
+  <header class="professional__header">
+    <div>
+      <h1>Mis citas asignadas</h1>
+      <p class="professional__subtitle">
+        {{ confirmedCount() }} cita(s) en estado CONFIRMED
+      </p>
+    </div>
+    <button
+      type="button"
+      class="btn btn--ghost"
+      (click)="load()"
+      [disabled]="loading()"
+    >
+      Refrescar
+    </button>
+  </header>
+
+  @if (loading()) {
+    <p class="state state--loading">Cargando citas…</p>
+  } @else if (error(); as err) {
+    <div class="state state--error">
+      <p>{{ err.message }}</p>
+      <button type="button" class="btn" (click)="load()">Reintentar</button>
+    </div>
+  } @else if (appointments().length === 0) {
+    <p class="state state--empty">No tenés citas asignadas.</p>
+  } @else {
+    <ul class="professional__list">
+      @for (appointment of appointments(); track appointment.id) {
+        <li
+          class="card"
+          [class.card--cancelled]="appointment.status === 'CANCELLED'"
+          [class.card--completed]="appointment.status === 'COMPLETED'"
+        >
+          <div class="card__row">
+            <span class="card__label">Cita</span>
+            <span class="card__value">#{{ appointment.id }}</span>
+          </div>
+          <div class="card__row">
+            <span class="card__label">Paciente</span>
+            <span class="card__value">#{{ appointment.patientId }}</span>
+          </div>
+          <div class="card__row">
+            <span class="card__label">Inicio</span>
+            <span class="card__value">{{ appointment.start | date: 'medium' }}</span>
+          </div>
+          <div class="card__row">
+            <span class="card__label">Fin</span>
+            <span class="card__value">{{ appointment.end | date: 'medium' }}</span>
+          </div>
+          <div class="card__row">
+            <span class="card__label">Estado</span>
+            <span class="badge badge--{{ appointment.status.toLowerCase() }}">
+              {{ appointment.status }}
+            </span>
+          </div>
+
+          @if (appointment.status === 'CONFIRMED') {
+            <button
+              type="button"
+              class="btn btn--primary card__action"
+              (click)="openStatusDialog(appointment)"
+            >
+              Cambiar estado
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>
+
+@if (selected(); as appointment) {
+  <app-status-change-dialog
+    [appointment]="appointment"
+    [busy]="updating()"
+    (confirm)="confirmStatusChange($event)"
+    (close)="closeDialog()"
+  />
+}

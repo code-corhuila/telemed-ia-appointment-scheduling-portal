@@ -1,25 +1,50 @@
 # telemed-ia-appointment-scheduling-portal
 
-> appointment-scheduling bounded context: web UI (remote)
+Angular 21 + Native Federation portal for the `appointment-scheduling` domain of TeleMed IA.
 
-Part of the **LMS Library** distributed system — team `lms-library`, Grupo 2.
-Governance and documentation live in [`library-docs`](https://github.com/code-corhuila/library-docs).
+## Scope
 
-## Branching
+- **Patient view** — list, create, cancel and reschedule own appointments.
+- **Professional view** — list assigned appointments and change their status (`CONFIRMED → COMPLETED | NO_SHOW | CANCELLED`).
 
-Three permanent branches. **None of them accepts a direct commit** — you enter through a child
-branch and leave through a Pull Request.
+The portal is mounted by the shell (`telemed-ia-front`) at `/appointment`, with an internal route for the professional view at `/appointment/professional`.
 
+## Stack
+
+- Angular 21 (standalone components, signals, new control flow).
+- `@angular-architects/native-federation`.
+- `nginx:alpine` for production serving.
+- Port: `4203`.
+- Remote name: `appointment`.
+
+## Local development (without Docker)
+
+```bash
+npm install
+npm run build
+npx http-server dist/telemed-ia-appointment-scheduling-portal/browser -p 4203 -c-1
 ```
-develop  <--PR--  feat/... fix/... chore/...
-qa       <--PR--  qa/...
-main     <--PR--  release/...  hotfix/...
+
+The portal calls `/api/v1/appointments/*` relative to the origin. To reach the real API you need either the shell's nginx proxy or a local proxy. See `nginx.local.conf` (gitignored) if you use the latter.
+
+### Local token
+
+The portal reads the access token from `sessionStorage.getItem('telemed.access-token')`. Set it in the browser console:
+
+```js
+sessionStorage.setItem('telemed.access-token', 'eyJ...');
 ```
 
-Promotion happens **by re-application** (`git cherry-pick -x`), never by merging one permanent
-branch into another: `merge develop -> qa` and `merge qa -> main` do not exist in this model.
+## Docker
 
-`main` requires **1 approval from `ariel5253`**. On `develop` and `qa` the team sets its own review
-rule.
+```bash
+cd deploy
+docker compose up -d --build
+```
 
-Full policy: `00-governance/branching-policy.md` in `library-docs`.
+The container joins the external platform network to reach the gateway at `http://telemed-ia-api-gateway:80`.
+
+## Known technical debt
+
+- The portal consumes its own `AppointmentApiService` and local `ApiError` type instead of `shell/apiClient` and `shell/apiError` (norm 5.4.1). Same pattern used by the patient portal. Will be replaced when a shared contracts package exists.
+- `professionalId` is hardcoded in the professional page. Will be read from the session/JWT once `identity-and-access` exposes it.
