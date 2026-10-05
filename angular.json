@@ -1,0 +1,75 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "projects": {
+    "telemed-ia-appointment-scheduling-portal": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "telemed-ia-appointment-scheduling-portal:esbuild",
+            "outputPath": "dist/telemed-ia-appointment-scheduling-portal"
+          },
+          "configurations": {
+            "production": {
+              "target": "telemed-ia-appointment-scheduling-portal:esbuild:production"
+            },
+            "development": {
+              "target": "telemed-ia-appointment-scheduling-portal:esbuild:development"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "esbuild": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/telemed-ia-appointment-scheduling-portal",
+            "browser": "src/bootstrap.ts",
+            "index": "src/index.html",
+            "tsConfig": "tsconfig.app.json",
+            "assets": [{ "glob": "**/*", "input": "public" }],
+            "styles": ["src/styles.css"],
+            "externalDependencies": [
+              "shell/apiClient",
+              "shell/session",
+              "shell/apiError"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "sourceMap": false,
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 4203
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "telemed-ia-appointment-scheduling-portal:build:production"
+            },
+            "development": {
+              "buildTarget": "telemed-ia-appointment-scheduling-portal:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}
