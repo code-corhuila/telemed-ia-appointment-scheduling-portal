@@ -1,18 +1,17 @@
 import { Routes } from '@angular/router';
-<<<<<<< Updated upstream
+
 import { AppointmentPageComponent } from './pages/appointment-page.component';
+
+import { AppointmentListPageComponent } from './pages/appointment-list-page.component';
 
 /**
  * Routes exposed to the shell via Native Federation as `./routes`.
  *
- * The shell mounts this at /appointment. If your team's portal has more
- * pages, add them here as children of the root path.
+ * The shell mounts these at /appointment.
  */
 export const APPOINTMENT_ROUTES: Routes = [
   {
     path: '',
-    component: AppointmentPageComponent,
-=======
 
 export const routes: Routes = [
   {
@@ -21,7 +20,6 @@ export const routes: Routes = [
       import('./pages/appointment-list-page.component').then(
         (m) => m.AppointmentListPageComponent,
       ),
->>>>>>> Stashed changes
   },
   {
     path: 'professional',
@@ -29,5 +27,6 @@ export const routes: Routes = [
       import('./pages/professional-appointment-list-page.component').then(
         (m) => m.ProfessionalAppointmentListPageComponent,
       ),
+    component: AppointmentListPageComponent,
   },
 ];
