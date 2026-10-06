@@ -1,0 +1,110 @@
+<section class="appointments">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Mis citas</h1>
+      <p class="page-subtitle">Consulta, cancela o reprograma tus citas.</p>
+    </div>
+    <button
+      type="button"
+      class="btn btn--primary"
+      (click)="startCreate()"
+      [disabled]="vm().action !== 'none'"
+    >
+      Nueva cita
+    </button>
+  </header>
+
+  @if (vm().action === 'create') {
+    <app-appointment-create-form
+      (created)="onActionCompleted()"
+      (cancel)="closeAction()"
+    />
+  } @else if (vm().action === 'reschedule' && vm().selected; as appt) {
+    <app-appointment-reschedule-form
+      [appointment]="appt"
+      (rescheduled)="onActionCompleted()"
+      (cancel)="closeAction()"
+    />
+  } @else if (vm().action === 'cancel' && vm().selected; as appt) {
+    <app-appointment-cancel-form
+      [appointment]="appt"
+      (cancelled)="onActionCompleted()"
+      (cancel)="closeAction()"
+    />
+  } @else if (vm().loading) {
+    <p class="state">Cargando citas…</p>
+  } @else if (vm().error; as err) {
+    <div class="state state--error" role="alert">
+      <p>{{ err.message }}</p>
+      @if (err.traceId) {
+        <p class="state__trace">Referencia: {{ err.traceId }}</p>
+      }
+      <button type="button" class="btn btn--ghost" (click)="load()">
+        Reintentar
+      </button>
+    </div>
+  } @else if (vm().appointments.length === 0) {
+    <div class="state state--empty">
+      <p>Aún no tienes citas.</p>
+      <button type="button" class="btn btn--primary" (click)="startCreate()">
+        Crear la primera
+      </button>
+    </div>
+  } @else {
+    <div class="appointments__list">
+      @for (appointment of vm().appointments; track appointment.id) {
+        <article class="appointment-card">
+          <header class="appointment-card__head">
+            <span class="badge badge--{{ appointment.status.toLowerCase() }}">
+              {{ statusLabel(appointment.status) }}
+            </span>
+            <span class="appointment-card__id">#{{ appointment.id }}</span>
+          </header>
+
+          <div class="appointment-card__body">
+            <div class="appointment-card__avatar">
+              {{ appointment.professionalId }}
+            </div>
+            <div class="appointment-card__info">
+              <h2 class="appointment-card__title">
+                Profesional #{{ appointment.professionalId }}
+              </h2>
+              <p class="appointment-card__meta">
+                <span class="appointment-card__icon">📅</span>
+                {{ appointment.start | date: "EEEE, d 'de' MMMM 'de' y" }}
+              </p>
+              <p class="appointment-card__meta">
+                <span class="appointment-card__icon">🕐</span>
+                {{ appointment.start | date: 'HH:mm' }} –
+                {{ appointment.end | date: 'HH:mm' }}
+              </p>
+            </div>
+          </div>
+
+          @if (canCancel(appointment) || canReschedule(appointment)) {
+            <footer class="appointment-card__actions">
+              @if (canCancel(appointment)) {
+                <button
+                  type="button"
+                  class="btn btn--danger-outline"
+                  (click)="startCancel(appointment)"
+                >
+                  CANCELAR
+                </button>
+              }
+              @if (canReschedule(appointment)) {
+                <button
+                  type="button"
+                  class="btn btn--primary"
+                  (click)="startReschedule(appointment)"
+                >
+                  REPROGRAMAR
+                </button>
+              }
+            </footer>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

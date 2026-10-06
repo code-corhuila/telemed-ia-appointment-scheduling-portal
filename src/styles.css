@@ -1,10 +1,44 @@
 :root {
-  --color-primary: #0a6e8a;
-  --color-danger: #b00020;
-  --color-text: #222;
-  --color-muted: #666;
-  --color-border: #d0d0d0;
-  --color-bg: #fafafa;
+  /* Text */
+  --color-text: #172b4d;
+  --color-muted: #8490a4;
+  --color-muted-soft: #9aa6b8;
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-bg: #f8fafc;
+  --color-bg-soft: #f7faff;
+
+  /* Borders */
+  --color-border: #dfe5ed;
+  --color-border-soft: #e5eaf1;
+
+  /* Primary */
+  --color-primary: #2c6bed;
+  --color-primary-text: #2467e8;
+  --color-primary-soft: #e4efff;
+  --color-primary-softer: #eef5ff;
+  --color-primary-icon: #edf4ff;
+
+  /* Status */
+  --color-success-bg: #dcfce7;
+  --color-success-text: #166534;
+  --color-danger-bg: #fee2e2;
+  --color-danger-text: #991b1b;
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #92400e;
+  --color-info-bg: #dbeafe;
+  --color-info-text: #1e40af;
+
+  /* Radii */
+  --radius-card: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  /* Shadow */
+  --shadow-card: 0 10px 30px rgb(28 49 87 / 5%);
+  --shadow-button: 0 8px 18px rgb(44 107 237 / 18%);
 }
 
 * { box-sizing: border-box; }
@@ -12,32 +46,108 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: var(--color-bg);
   color: var(--color-text);
+  background: var(--color-bg);
 }
 
-button {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background: white;
-  cursor: pointer;
+.page-title {
+  margin: 0 0 0.35rem;
+  color: var(--color-text);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 750;
+  letter-spacing: -0.03em;
 }
-button:disabled { cursor: not-allowed; opacity: 0.6; }
 
-.field { margin-bottom: 1rem; display: flex; flex-direction: column; }
-.field label { font-weight: 600; margin-bottom: 0.25rem; }
-.field input, .field select {
-  padding: 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+.page-subtitle {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.badge--confirmed {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text);
+}
+
+.badge--rescheduled {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.badge--completed {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.badge--cancelled {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.badge--no_show {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter .15s ease, box-shadow .15s ease;
 }
-.field .error { color: var(--color-danger); font-size: 0.875rem; margin-top: 0.25rem; }
 
-.state { padding: 1rem; border: 1px solid var(--color-border); border-radius: 4px; background: white; }
-.state--error { border-color: var(--color-danger); color: var(--color-danger); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn--primary {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-button);
+}
+.btn--primary:hover:not(:disabled) { filter: brightness(1.06); }
+
+.btn--ghost {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn--danger-outline {
+  background: var(--color-surface);
+  color: var(--color-danger-text);
+  border-color: var(--color-danger-bg);
+}
+
+.state {
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.state--error { border-color: var(--color-danger-bg); color: var(--color-danger-text); }
 .state--empty { color: var(--color-muted); }
-
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid var(--color-border); }

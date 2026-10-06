@@ -32,99 +32,13 @@ interface VM {
     AppointmentRescheduleFormComponent,
     AppointmentCancelFormComponent,
   ],
-  template: `
-    <section class="page">
-      <header class="page-header">
-        <h2>Mis citas</h2>
-        <button type="button" (click)="startCreate()" [disabled]="vm().action !== 'none'">
-          Nueva cita
-        </button>
-      </header>
-
-      @if (vm().action === 'create') {
-        <app-appointment-create-form
-          (created)="onActionCompleted()"
-          (cancel)="closeAction()"
-        />
-      } @else if (vm().action === 'reschedule' && vm().selected; as appt) {
-        <app-appointment-reschedule-form
-          [appointment]="appt"
-          (rescheduled)="onActionCompleted()"
-          (cancel)="closeAction()"
-        />
-      } @else if (vm().action === 'cancel' && vm().selected; as appt) {
-        <app-appointment-cancel-form
-          [appointment]="appt"
-          (cancelled)="onActionCompleted()"
-          (cancel)="closeAction()"
-        />
-      } @else if (vm().loading) {
-        <div class="state">
-          <p>Cargando citas…</p>
-        </div>
-      } @else if (vm().error; as err) {
-        <div class="state state--error" role="alert">
-          <p>{{ err.message }}</p>
-          @if (err.traceId) { <p class="small">Referencia: {{ err.traceId }}</p> }
-          <button type="button" (click)="load()">Reintentar</button>
-        </div>
-      } @else if (vm().appointments.length === 0) {
-        <div class="state state--empty">
-          <p>Aún no tienes citas.</p>
-          <button type="button" (click)="startCreate()">Crear la primera</button>
-        </div>
-      } @else {
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Profesional</th>
-              <th>Inicio</th>
-              <th>Fin</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (a of vm().appointments; track a.id) {
-              <tr>
-                <td>{{ a.id }}</td>
-                <td>{{ a.professionalId }}</td>
-                <td>{{ a.start | date: 'short' }}</td>
-                <td>{{ a.end | date: 'short' }}</td>
-                <td>{{ a.status }}</td>
-                <td class="actions">
-                  @if (canReschedule(a)) {
-                    <button type="button" (click)="startReschedule(a)">Reprogramar</button>
-                  }
-                  @if (canCancel(a)) {
-                    <button type="button" (click)="startCancel(a)">Cancelar</button>
-                  }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-        <p class="small">Total: {{ vm().appointments.length }}</p>
-      }
-    </section>
-  `,
-  styles: [
-    `.page { max-width: 900px; }
-     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-     .actions { display: flex; gap: 0.25rem; }
-     .small { font-size: 0.75rem; color: var(--color-muted); }`,
-  ],
+  templateUrl: './appointment-list-page.component.html',
+  styleUrl: './appointment-list-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppointmentListPageComponent implements OnInit {
   private readonly api = inject(AppointmentApiService);
 
-  /**
-   * DEV ONLY. In the real system the patient id comes from the
-   * authenticated session. This constant will be replaced by the shell's
-   * session when integration lands.
-   */
   private readonly devPatientId = 1;
 
   protected readonly vm = signal<VM>({
@@ -192,5 +106,16 @@ export class AppointmentListPageComponent implements OnInit {
   protected onActionCompleted(): void {
     this.vm.update((s) => ({ ...s, action: 'none', selected: null }));
     this.load();
+  }
+
+  protected statusLabel(status: string): string {
+    const map: Record<string, string> = {
+      CONFIRMED: 'CONFIRMADA',
+      RESCHEDULED: 'REPROGRAMADA',
+      COMPLETED: 'COMPLETADA',
+      CANCELLED: 'CANCELADA',
+      NO_SHOW: 'NO ASISTIÓ',
+    };
+    return map[status] ?? status;
   }
 }

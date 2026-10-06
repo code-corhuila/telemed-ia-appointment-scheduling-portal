@@ -23,9 +23,6 @@ import { StatusChangeDialogComponent } from '../components/status-change-dialog.
 export class ProfessionalAppointmentListPageComponent implements OnInit {
   private readonly api = inject(AppointmentApiService);
 
-  // TODO: replace with the professional id from the session/JWT once
-  // identity-and-access exposes it. Same temporary pattern used by the
-  // patient page (hardcoded patient/1).
   private readonly professionalId = 2;
 
   readonly loading = signal(true);
@@ -82,5 +79,16 @@ export class ProfessionalAppointmentListPageComponent implements OnInit {
         this.updating.set(false);
       },
     });
+  }
+
+  protected statusLabel(status: string): string {
+    const map: Record<string, string> = {
+      CONFIRMED: 'CONFIRMADA',
+      RESCHEDULED: 'REPROGRAMADA',
+      COMPLETED: 'COMPLETADA',
+      CANCELLED: 'CANCELADA',
+      NO_SHOW: 'NO ASISTIÓ',
+    };
+    return map[status] ?? status;
   }
 }
