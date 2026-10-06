@@ -2,26 +2,21 @@
   <header class="page-header">
     <div>
       <h1 class="page-title">Citas profesionales</h1>
-      <p class="page-subtitle">Actualiza el estado de las consultas asignadas.</p>
     </div>
-    <button
-      type="button"
-      class="btn btn--ghost"
-      (click)="load()"
-      [disabled]="loading()"
-    >
-      Refrescar
-    </button>
   </header>
+
+  <article class="info-card">
+    <p class="info-card__eyebrow">GESTIÓN DE CITAS</p>
+    <h2 class="info-card__title">Citas profesionales</h2>
+    <p class="info-card__subtitle">Actualiza el estado de las consultas asignadas.</p>
+  </article>
 
   @if (loading()) {
     <p class="state">Cargando citas…</p>
   } @else if (error(); as err) {
     <div class="state state--error" role="alert">
       <p>{{ err.message }}</p>
-      <button type="button" class="btn btn--ghost" (click)="load()">
-        Reintentar
-      </button>
+      <button type="button" class="btn btn--ghost" (click)="load()">Reintentar</button>
     </div>
   } @else if (appointments().length === 0) {
     <p class="state state--empty">No tenés citas asignadas.</p>
@@ -38,10 +33,12 @@
             <p class="pro-card__when">
               {{ appointment.start | date: 'dd/MM/yyyy HH:mm' }}
             </p>
-            <h2 class="pro-card__patient">
-              Paciente #{{ appointment.patientId }}
-            </h2>
+            <h2 class="pro-card__patient">Paciente #{{ appointment.patientId }}</h2>
             <p class="pro-card__meta">Medicina General</p>
+            <p class="pro-card__preconsult">
+              <span aria-hidden="true">🩺</span>
+              Pre-consulta disponible
+            </p>
           </div>
 
           <div class="pro-card__actions">
@@ -51,10 +48,24 @@
             @if (appointment.status === 'CONFIRMED') {
               <button
                 type="button"
-                class="btn btn--ghost"
+                class="btn btn--ghost pro-card__inline"
                 (click)="openStatusDialog(appointment)"
               >
-                CAMBIAR ESTADO
+                ATENDIDA
+              </button>
+              <button
+                type="button"
+                class="btn btn--ghost pro-card__inline"
+                (click)="openStatusDialog(appointment)"
+              >
+                NO ASISTIÓ
+              </button>
+              <button
+                type="button"
+                class="btn btn--danger-outline pro-card__inline"
+                (click)="openStatusDialog(appointment)"
+              >
+                CANCELAR
               </button>
             }
           </div>
