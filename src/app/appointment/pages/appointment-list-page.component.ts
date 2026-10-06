@@ -2,12 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { AppointmentApiService } from '../data/appointment-api.service';
-import type { Appointment } from '../model/appointment';
+import type { Appointment, AppointmentStatus } from '../model/appointment';
 import type { ApiError } from '../model/api-error';
 import { AppointmentCreateFormComponent } from '../components/appointment-create-form.component';
 import { AppointmentRescheduleFormComponent } from '../components/appointment-reschedule-form.component';
@@ -15,12 +16,15 @@ import { AppointmentCancelFormComponent } from '../components/appointment-cancel
 
 type Action = 'none' | 'create' | 'reschedule' | 'cancel';
 
+type FilterTab = 'ALL' | AppointmentStatus;
+
 interface VM {
   readonly loading: boolean;
   readonly error: ApiError | null;
   readonly appointments: Appointment[];
   readonly action: Action;
   readonly selected: Appointment | null;
+  readonly tab: FilterTab;
 }
 
 @Component({
@@ -38,7 +42,6 @@ interface VM {
 })
 export class AppointmentListPageComponent implements OnInit {
   private readonly api = inject(AppointmentApiService);
-
   private readonly devPatientId = 1;
 
   protected readonly vm = signal<VM>({
@@ -47,6 +50,33 @@ export class AppointmentListPageComponent implements OnInit {
     appointments: [],
     action: 'none',
     selected: null,
+    tab: 'ALL',
+  });
+
+  protected readonly tabs: { key: FilterTab; label: string }[] = [
+    { key: 'ALL', label: 'Todas' },
+    { key: 'CONFIRMED', label: 'Confirmadas' },
+    { key: 'RESCHEDULED', label: 'Reprogramadas' },
+    { key: 'COMPLETED', label: 'Completadas' },
+    { key: 'CANCELLED', label: 'Canceladas' },
+  ];
+
+  protected readonly filteredAppointments = computed(() => {
+    const s = this.vm();
+    if (s.tab === 'ALL') return s.appointments;
+    return s.appointments.filter((a) => a.status === s.tab);
+  });
+
+  protected readonly tabCounts = computed(() => {
+    const list = this.vm().appointments;
+    return {
+      ALL: list.length,
+      CONFIRMED: list.filter((a) => a.status === 'CONFIRMED').length,
+      RESCHEDULED: list.filter((a) => a.status === 'RESCHEDULED').length,
+      COMPLETED: list.filter((a) => a.status === 'COMPLETED').length,
+      CANCELLED: list.filter((a) => a.status === 'CANCELLED').length,
+      NO_SHOW: list.filter((a) => a.status === 'NO_SHOW').length,
+    } as Record<FilterTab, number>;
   });
 
   ngOnInit(): void {
@@ -79,12 +109,16 @@ export class AppointmentListPageComponent implements OnInit {
     });
   }
 
+  protected setTab(tab: FilterTab): void {
+    this.vm.update((s) => ({ ...s, tab }));
+  }
+
   protected canReschedule(a: Appointment): boolean {
-    return a.status === 'CONFIRMED' || a.status === 'RESCHEDULED';
+    return a.status === 'CONFIRMED' || a.status === 'RESCHEDULED' || a.status === 'CANCELLED';
   }
 
   protected canCancel(a: Appointment): boolean {
-    return a.status !== 'COMPLETED' && a.status !== 'CANCELLED';
+    return a.status === 'CONFIRMED' || a.status === 'RESCHEDULED';
   }
 
   protected startCreate(): void {
@@ -117,5 +151,16 @@ export class AppointmentListPageComponent implements OnInit {
       NO_SHOW: 'NO ASISTIÓ',
     };
     return map[status] ?? status;
+  }
+
+  protected statusIcon(status: string): string {
+    const map: Record<string, string> = {
+      CONFIRMED: '👤',
+      RESCHEDULED: '👤',
+      COMPLETED: '👤',
+      CANCELLED: '👤',
+      NO_SHOW: '👤',
+    };
+    return map[status] ?? '👤';
   }
 }
