@@ -1,10 +1,8 @@
 <section class="professional">
-  <header class="professional__header">
+  <header class="page-header">
     <div>
-      <h1>Mis citas asignadas</h1>
-      <p class="professional__subtitle">
-        {{ confirmedCount() }} cita(s) en estado CONFIRMED
-      </p>
+      <h1 class="page-title">Citas profesionales</h1>
+      <p class="page-subtitle">Actualiza el estado de las consultas asignadas.</p>
     </div>
     <button
       type="button"
@@ -17,57 +15,52 @@
   </header>
 
   @if (loading()) {
-    <p class="state state--loading">Cargando citas…</p>
+    <p class="state">Cargando citas…</p>
   } @else if (error(); as err) {
-    <div class="state state--error">
+    <div class="state state--error" role="alert">
       <p>{{ err.message }}</p>
-      <button type="button" class="btn" (click)="load()">Reintentar</button>
+      <button type="button" class="btn btn--ghost" (click)="load()">
+        Reintentar
+      </button>
     </div>
   } @else if (appointments().length === 0) {
     <p class="state state--empty">No tenés citas asignadas.</p>
   } @else {
-    <ul class="professional__list">
+    <div class="professional__list">
       @for (appointment of appointments(); track appointment.id) {
-        <li
-          class="card"
-          [class.card--cancelled]="appointment.status === 'CANCELLED'"
-          [class.card--completed]="appointment.status === 'COMPLETED'"
-        >
-          <div class="card__row">
-            <span class="card__label">Cita</span>
-            <span class="card__value">#{{ appointment.id }}</span>
-          </div>
-          <div class="card__row">
-            <span class="card__label">Paciente</span>
-            <span class="card__value">#{{ appointment.patientId }}</span>
-          </div>
-          <div class="card__row">
-            <span class="card__label">Inicio</span>
-            <span class="card__value">{{ appointment.start | date: 'medium' }}</span>
-          </div>
-          <div class="card__row">
-            <span class="card__label">Fin</span>
-            <span class="card__value">{{ appointment.end | date: 'medium' }}</span>
-          </div>
-          <div class="card__row">
-            <span class="card__label">Estado</span>
-            <span class="badge badge--{{ appointment.status.toLowerCase() }}">
-              {{ appointment.status }}
-            </span>
+        <article class="pro-card">
+          <div class="pro-card__date">
+            <span class="pro-card__day">{{ appointment.start | date: 'd' }}</span>
+            <span class="pro-card__month">{{ appointment.start | date: 'MMM' }}</span>
           </div>
 
-          @if (appointment.status === 'CONFIRMED') {
-            <button
-              type="button"
-              class="btn btn--primary card__action"
-              (click)="openStatusDialog(appointment)"
-            >
-              Cambiar estado
-            </button>
-          }
-        </li>
+          <div class="pro-card__info">
+            <p class="pro-card__when">
+              {{ appointment.start | date: 'dd/MM/yyyy HH:mm' }}
+            </p>
+            <h2 class="pro-card__patient">
+              Paciente #{{ appointment.patientId }}
+            </h2>
+            <p class="pro-card__meta">Medicina General</p>
+          </div>
+
+          <div class="pro-card__actions">
+            <span class="badge badge--{{ appointment.status.toLowerCase() }}">
+              {{ statusLabel(appointment.status) }}
+            </span>
+            @if (appointment.status === 'CONFIRMED') {
+              <button
+                type="button"
+                class="btn btn--ghost"
+                (click)="openStatusDialog(appointment)"
+              >
+                CAMBIAR ESTADO
+              </button>
+            }
+          </div>
+        </article>
       }
-    </ul>
+    </div>
   }
 </section>
 
