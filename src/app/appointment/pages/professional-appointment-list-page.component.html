@@ -2,49 +2,102 @@
   <header class="page-header">
     <div>
       <h1 class="page-title">Citas profesionales</h1>
+      <p class="page-subtitle">
+        Gestiona y actualiza el estado de tus consultas asignadas.
+      </p>
     </div>
   </header>
 
   <article class="info-card">
-    <p class="info-card__eyebrow">GESTIÓN DE CITAS</p>
-    <h2 class="info-card__title">Citas profesionales</h2>
-    <p class="info-card__subtitle">Actualiza el estado de las consultas asignadas.</p>
+    <div class="info-card__content">
+      <p class="info-card__eyebrow">GESTIÓN DE CITAS</p>
+
+      <h2 class="info-card__title">
+        Citas profesionales
+      </h2>
+
+      <p class="info-card__subtitle">
+        Actualiza el estado de las consultas asignadas.
+      </p>
+    </div>
   </article>
 
   @if (loading()) {
-    <p class="state">Cargando citas…</p>
+    <div class="state state--loading">
+      <span class="state__spinner" aria-hidden="true"></span>
+      <span>Cargando citas…</span>
+    </div>
   } @else if (error(); as err) {
-    <div class="state state--error" role="alert">
-      <p>{{ err.message }}</p>
-      <button type="button" class="btn btn--ghost" (click)="load()">Reintentar</button>
+    <div
+      class="state state--error professional__state"
+      role="alert"
+    >
+      <div>
+        <strong>No fue posible cargar las citas.</strong>
+        <p>{{ err.message }}</p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="load()"
+      >
+        Reintentar
+      </button>
     </div>
   } @else if (appointments().length === 0) {
-    <p class="state state--empty">No tenés citas asignadas.</p>
+    <div class="empty-card">
+      <div class="empty-card__icon">📅</div>
+
+      <h2>No tienes citas asignadas</h2>
+
+      <p>
+        Cuando tengas consultas asignadas aparecerán aquí.
+      </p>
+    </div>
   } @else {
     <div class="professional__list">
-      @for (appointment of appointments(); track appointment.id) {
+      @for (
+        appointment of appointments();
+        track appointment.id
+      ) {
         <article class="pro-card">
-          <div class="pro-card__date">
-            <span class="pro-card__day">{{ appointment.start | date: 'd' }}</span>
-            <span class="pro-card__month">{{ appointment.start | date: 'MMM' }}</span>
+          <div class="pro-card__date" aria-hidden="true">
+            <span class="pro-card__day">
+              {{ appointment.start | date: 'd' }}
+            </span>
+
+            <span class="pro-card__month">
+              {{ appointment.start | date: 'MMM' }}
+            </span>
           </div>
 
           <div class="pro-card__info">
             <p class="pro-card__when">
               {{ appointment.start | date: 'dd/MM/yyyy HH:mm' }}
             </p>
-            <h2 class="pro-card__patient">Paciente #{{ appointment.patientId }}</h2>
-            <p class="pro-card__meta">Medicina General</p>
+
+            <h2 class="pro-card__patient">
+              Paciente #{{ appointment.patientId }}
+            </h2>
+
+            <p class="pro-card__meta">
+              Medicina General
+            </p>
+
             <p class="pro-card__preconsult">
-              <span aria-hidden="true">🩺</span>
+              <span aria-hidden="true">🤖</span>
               Pre-consulta disponible
             </p>
           </div>
 
           <div class="pro-card__actions">
-            <span class="badge badge--{{ appointment.status.toLowerCase() }}">
+            <span
+              class="badge badge--{{ appointment.status.toLowerCase() }}"
+            >
               {{ statusLabel(appointment.status) }}
             </span>
+
             @if (appointment.status === 'CONFIRMED') {
               <button
                 type="button"
@@ -53,6 +106,7 @@
               >
                 ATENDIDA
               </button>
+
               <button
                 type="button"
                 class="btn btn--ghost pro-card__inline"
@@ -60,6 +114,7 @@
               >
                 NO ASISTIÓ
               </button>
+
               <button
                 type="button"
                 class="btn btn--danger-outline pro-card__inline"
