@@ -1,16 +1,32 @@
 <section class="professional">
   <header class="page-header">
     <div>
-      <h1 class="page-title">Citas profesionales</h1>
+      <p class="professional__eyebrow">
+        GESTIÓN DE CITAS
+      </p>
+
+      <h1 class="page-title">
+        Citas profesionales
+      </h1>
+
       <p class="page-subtitle">
-        Gestiona y actualiza el estado de tus consultas asignadas.
+        Actualiza el estado de las consultas asignadas.
       </p>
     </div>
+
+    <a
+      class="btn btn--outline-primary"
+      routerLink="/appointment/professional/schedule"
+    >
+      MI AGENDA
+    </a>
   </header>
 
   <article class="info-card">
-    <div class="info-card__content">
-      <p class="info-card__eyebrow">GESTIÓN DE CITAS</p>
+    <div>
+      <p class="info-card__eyebrow">
+        GESTIÓN DE CITAS
+      </p>
 
       <h2 class="info-card__title">
         Citas profesionales
@@ -24,8 +40,14 @@
 
   @if (loading()) {
     <div class="state state--loading">
-      <span class="state__spinner" aria-hidden="true"></span>
-      <span>Cargando citas…</span>
+      <span
+        class="state__spinner"
+        aria-hidden="true"
+      ></span>
+
+      <span>
+        Cargando citas…
+      </span>
     </div>
   } @else if (error(); as err) {
     <div
@@ -33,8 +55,13 @@
       role="alert"
     >
       <div>
-        <strong>No fue posible cargar las citas.</strong>
-        <p>{{ err.message }}</p>
+        <strong>
+          No fue posible cargar las citas.
+        </strong>
+
+        <p>
+          {{ err.message }}
+        </p>
       </div>
 
       <button
@@ -45,14 +72,21 @@
         Reintentar
       </button>
     </div>
-  } @else if (appointments().length === 0) {
+  } @else if (
+    appointments().length === 0
+  ) {
     <div class="empty-card">
-      <div class="empty-card__icon">📅</div>
+      <div class="empty-card__icon">
+        📅
+      </div>
 
-      <h2>No tienes citas asignadas</h2>
+      <h2>
+        No tienes citas asignadas
+      </h2>
 
       <p>
-        Cuando tengas consultas asignadas aparecerán aquí.
+        Cuando tengas consultas asignadas
+        aparecerán aquí.
       </p>
     </div>
   } @else {
@@ -62,23 +96,39 @@
         track appointment.id
       ) {
         <article class="pro-card">
-          <div class="pro-card__date" aria-hidden="true">
+          <div
+            class="pro-card__date"
+            aria-hidden="true"
+          >
             <span class="pro-card__day">
-              {{ appointment.start | date: 'd' }}
+              {{
+                appointment.start
+                  | date: 'd'
+              }}
             </span>
 
             <span class="pro-card__month">
-              {{ appointment.start | date: 'MMM' }}
+              {{
+                appointment.start
+                  | date: 'MMM'
+              }}
             </span>
           </div>
 
           <div class="pro-card__info">
             <p class="pro-card__when">
-              {{ appointment.start | date: 'dd/MM/yyyy HH:mm' }}
+              {{
+                appointment.start
+                  | date: 'dd/MM/yyyy HH:mm'
+              }}
             </p>
 
             <h2 class="pro-card__patient">
-              Paciente #{{ appointment.patientId }}
+              {{
+                patientDisplayName(
+                  appointment.patientId
+                )
+              }}
             </h2>
 
             <p class="pro-card__meta">
@@ -86,23 +136,47 @@
             </p>
 
             <p class="pro-card__preconsult">
-              <span aria-hidden="true">🤖</span>
-              Pre-consulta disponible
+              <span aria-hidden="true">
+                🩺
+              </span>
+
+              @if (
+                appointment.preconsultationSummaryId
+              ) {
+                Pre-consulta disponible
+              } @else {
+                Pre-consulta pendiente
+              }
             </p>
           </div>
 
           <div class="pro-card__actions">
             <span
-              class="badge badge--{{ appointment.status.toLowerCase() }}"
+              class="badge badge--{{
+                appointment.status.toLowerCase()
+              }}"
             >
-              {{ statusLabel(appointment.status) }}
+              {{
+                statusLabel(
+                  appointment.status
+                )
+              }}
             </span>
 
-            @if (appointment.status === 'CONFIRMED') {
+            @if (
+              appointment.status ===
+                'CONFIRMED' ||
+              appointment.status ===
+                'RESCHEDULED'
+            ) {
               <button
                 type="button"
                 class="btn btn--ghost pro-card__inline"
-                (click)="openStatusDialog(appointment)"
+                (click)="
+                  openStatusDialog(
+                    appointment
+                  )
+                "
               >
                 ATENDIDA
               </button>
@@ -110,7 +184,11 @@
               <button
                 type="button"
                 class="btn btn--ghost pro-card__inline"
-                (click)="openStatusDialog(appointment)"
+                (click)="
+                  openStatusDialog(
+                    appointment
+                  )
+                "
               >
                 NO ASISTIÓ
               </button>
@@ -118,7 +196,11 @@
               <button
                 type="button"
                 class="btn btn--danger-outline pro-card__inline"
-                (click)="openStatusDialog(appointment)"
+                (click)="
+                  openStatusDialog(
+                    appointment
+                  )
+                "
               >
                 CANCELAR
               </button>
@@ -134,7 +216,9 @@
   <app-status-change-dialog
     [appointment]="appointment"
     [busy]="updating()"
-    (confirm)="confirmStatusChange($event)"
+    (confirm)="
+      confirmStatusChange($event)
+    "
     (close)="closeDialog()"
   />
 }
