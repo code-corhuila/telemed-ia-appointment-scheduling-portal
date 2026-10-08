@@ -15,11 +15,22 @@ import {
 } from '@angular/forms';
 import { AppointmentApiService } from '../data/appointment-api.service';
 import type { ApiError } from '../model/api-error';
+import {
+  PROFESSIONAL_DIRECTORY,
+  currentUserId,
+  currentUserName,
+} from '../data/appointment-user-display';
 
 function futureStart(control: AbstractControl): ValidationErrors | null {
   const value = control.value as string | null;
-  if (!value) return null;
-  return new Date(value).getTime() > Date.now() ? null : { pastDate: true };
+
+  if (!value) {
+    return null;
+  }
+
+  return new Date(value).getTime() > Date.now()
+    ? null
+    : { pastDate: true };
 }
 
 @Component({
@@ -39,9 +50,13 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
 
           <div>
             <p class="eyebrow">GESTIÓN DE CITAS</p>
-            <h2 class="form-title">Nueva cita</h2>
+
+            <h2 class="form-title">
+              Nueva cita
+            </h2>
+
             <p class="form-subtitle">
-              Completa los datos para agendar una nueva consulta.
+              Selecciona un profesional y un horario.
             </p>
           </div>
         </header>
@@ -50,52 +65,62 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
           <div class="step__number">1</div>
 
           <div class="step__content">
-            <h3 class="step__title">Datos de la cita</h3>
+            <h3 class="step__title">
+              Paciente y profesional
+            </h3>
+
             <p class="step__subtitle">
-              Identifica al paciente y al profesional.
+              La cita se registrará para el paciente autenticado.
             </p>
 
             <div class="field-grid">
-              <div class="field">
-                <label for="patientId">ID del paciente</label>
+              <div class="identity-card">
+                <span class="identity-card__label">
+                  Paciente
+                </span>
 
-                <input
-                  id="patientId"
-                  class="input"
-                  type="number"
-                  formControlName="patientId"
-                  min="1"
-                  placeholder="Ej. 101"
-                />
+                <strong>
+                  {{ currentPatientName }}
+                </strong>
 
-                @if (
-                  form.controls.patientId.touched &&
-                  form.controls.patientId.invalid
-                ) {
-                  <span class="error">
-                    Debe ser un número positivo.
-                  </span>
-                }
+                <span class="identity-card__hint">
+                  Usuario autenticado
+                </span>
               </div>
 
               <div class="field">
-                <label for="professionalId">ID del profesional</label>
+                <label for="professionalId">
+                  Profesional
+                </label>
 
-                <input
+                <select
                   id="professionalId"
                   class="input"
-                  type="number"
                   formControlName="professionalId"
-                  min="1"
-                  placeholder="Ej. 201"
-                />
+                >
+                  <option [ngValue]="null">
+                    Selecciona un profesional
+                  </option>
+
+                  @for (
+                    professional of professionals;
+                    track professional.id
+                  ) {
+                    <option
+                      [ngValue]="professional.id"
+                    >
+                      {{ professional.name }} —
+                      {{ professional.specialty }}
+                    </option>
+                  }
+                </select>
 
                 @if (
                   form.controls.professionalId.touched &&
                   form.controls.professionalId.invalid
                 ) {
                   <span class="error">
-                    Debe ser un número positivo.
+                    Selecciona un profesional.
                   </span>
                 }
               </div>
@@ -107,14 +132,19 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
           <div class="step__number">2</div>
 
           <div class="step__content">
-            <h3 class="step__title">Horario</h3>
+            <h3 class="step__title">
+              Horario
+            </h3>
+
             <p class="step__subtitle">
               Selecciona una fecha y hora futura para la consulta.
             </p>
 
             <div class="field-grid">
               <div class="field">
-                <label for="start">Inicio</label>
+                <label for="start">
+                  Inicio
+                </label>
 
                 <input
                   id="start"
@@ -143,7 +173,9 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
               </div>
 
               <div class="field">
-                <label for="end">Fin</label>
+                <label for="end">
+                  Fin
+                </label>
 
                 <input
                   id="end"
@@ -170,16 +202,22 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
 
           <div>
             <strong>Ten en cuenta</strong>
+
             <p>
-              Usa una fecha futura. El backend validará la disponibilidad del
-              horario antes de crear la cita.
+              Usa una fecha futura. El backend validará la
+              disponibilidad del horario antes de crear la cita.
             </p>
           </div>
         </div>
 
         @if (serverError(); as err) {
-          <div class="state state--error server-error">
-            <strong>No fue posible crear la cita.</strong>
+          <div
+            class="state state--error server-error"
+          >
+            <strong>
+              No fue posible crear la cita.
+            </strong>
+
             <p>{{ err.message }}</p>
 
             @if (err.traceId) {
@@ -194,9 +232,17 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
           <button
             type="submit"
             class="btn btn--primary actions__primary"
-            [disabled]="submitting() || form.invalid"
+            [disabled]="
+              submitting() ||
+              form.invalid ||
+              !form.controls.patientId.value
+            "
           >
-            {{ submitting() ? 'Guardando…' : 'Crear cita' }}
+            {{
+              submitting()
+                ? 'Guardando…'
+                : 'Crear cita'
+            }}
           </button>
 
           <button
@@ -317,6 +363,35 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
         gap: 1rem;
       }
 
+      .identity-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.25rem;
+        min-height: 84px;
+        padding: 0.9rem 1rem;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-bg-soft);
+      }
+
+      .identity-card__label {
+        color: var(--color-muted);
+        font-size: 0.75rem;
+        font-weight: 650;
+      }
+
+      .identity-card strong {
+        color: var(--color-text);
+        font-size: 0.95rem;
+        font-weight: 750;
+      }
+
+      .identity-card__hint {
+        color: var(--color-muted-soft);
+        font-size: 0.72rem;
+      }
+
       .field {
         display: flex;
         flex-direction: column;
@@ -342,17 +417,13 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
         font-size: 0.9rem;
         transition:
           border-color 0.15s ease,
-          box-shadow 0.15s ease,
-          background 0.15s ease;
-      }
-
-      .input::placeholder {
-        color: var(--color-muted-soft);
+          box-shadow 0.15s ease;
       }
 
       .input:focus {
         border-color: var(--color-primary);
-        box-shadow: 0 0 0 3px rgb(44 107 237 / 10%);
+        box-shadow:
+          0 0 0 3px rgb(44 107 237 / 10%);
       }
 
       .error {
@@ -440,34 +511,80 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppointmentCreateFormComponent {
-  @Output() readonly created = new EventEmitter<void>();
-  @Output() readonly cancel = new EventEmitter<void>();
+  @Output() readonly created =
+    new EventEmitter<void>();
+
+  @Output() readonly cancel =
+    new EventEmitter<void>();
 
   private readonly fb = inject(FormBuilder);
-  private readonly api = inject(AppointmentApiService);
+  private readonly api =
+    inject(AppointmentApiService);
 
-  protected readonly submitting = signal(false);
-  protected readonly serverError = signal<ApiError | null>(null);
+  protected readonly professionals =
+    PROFESSIONAL_DIRECTORY;
 
-  /**
-   * A single Idempotency-Key per intent. If the user clicks "Crear cita"
-   * once and the network retries, the same key is sent. A new key is
-   * generated every time the form is opened (component is recreated).
-   */
-  private readonly idempotencyKey = crypto.randomUUID();
+  protected readonly currentPatientName =
+    currentUserName();
 
-  protected readonly form = this.fb.group({
-    patientId: this.fb.control<number | null>(null, [Validators.required, Validators.min(1)]),
-    professionalId: this.fb.control<number | null>(null, [Validators.required, Validators.min(1)]),
-    start: this.fb.control<string | null>(null, [Validators.required, futureStart]),
-    end: this.fb.control<string | null>(null, [Validators.required]),
-  });
+  protected readonly submitting =
+    signal(false);
+
+  protected readonly serverError =
+    signal<ApiError | null>(null);
+
+  private readonly idempotencyKey =
+    crypto.randomUUID();
+
+  protected readonly form =
+    this.fb.group({
+      patientId: this.fb.control<number | null>(
+        currentUserId(),
+        [
+          Validators.required,
+          Validators.min(1),
+        ],
+      ),
+
+      professionalId:
+        this.fb.control<number | null>(
+          null,
+          [
+            Validators.required,
+            Validators.min(1),
+          ],
+        ),
+
+      start: this.fb.control<string | null>(
+        null,
+        [
+          Validators.required,
+          futureStart,
+        ],
+      ),
+
+      end: this.fb.control<string | null>(
+        null,
+        [Validators.required],
+      ),
+    });
 
   protected submit(): void {
-    if (this.form.invalid || this.submitting()) return;
+    if (
+      this.form.invalid ||
+      this.submitting()
+    ) {
+      return;
+    }
 
     const raw = this.form.getRawValue();
-    if (raw.patientId === null || raw.professionalId === null || !raw.start || !raw.end) {
+
+    if (
+      raw.patientId === null ||
+      raw.professionalId === null ||
+      !raw.start ||
+      !raw.end
+    ) {
       return;
     }
 
@@ -479,8 +596,12 @@ export class AppointmentCreateFormComponent {
         {
           patientId: raw.patientId,
           professionalId: raw.professionalId,
-          start: new Date(raw.start).toISOString(),
-          end: new Date(raw.end).toISOString(),
+          start: new Date(
+            raw.start,
+          ).toISOString(),
+          end: new Date(
+            raw.end,
+          ).toISOString(),
         },
         this.idempotencyKey,
       )
@@ -489,13 +610,19 @@ export class AppointmentCreateFormComponent {
           this.submitting.set(false);
           this.created.emit();
         },
+
         error: (err) => {
           this.submitting.set(false);
-          const apiError: ApiError = err?.error ?? {
-            status: 0,
-            code: 'UNKNOWN',
-            message: err?.message ?? 'Unexpected error',
-          };
+
+          const apiError: ApiError =
+            err?.error ?? {
+              status: 0,
+              code: 'UNKNOWN',
+              message:
+                err?.message ??
+                'Unexpected error',
+            };
+
           this.serverError.set(apiError);
         },
       });
