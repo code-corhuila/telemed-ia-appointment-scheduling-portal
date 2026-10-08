@@ -1,0 +1,26 @@
+<section class="booking-page">
+  <a
+    class="back-link"
+    routerLink="/appointment"
+  >
+    <span aria-hidden="true">←</span>
+    Volver a mis citas
+  </a>
+
+  <header class="page-header booking-page__header">
+    <div>
+      <p class="booking-page__eyebrow">NUEVA CONSULTA</p>
+
+      <h1 class="page-title">Agendar cita</h1>
+
+      <p class="page-subtitle">
+        Selecciona un profesional y un horario.
+      </p>
+    </div>
+  </header>
+
+  <app-appointment-create-form
+    (created)="onCreated()"
+    (cancel)="goBack()"
+  />
+</section>

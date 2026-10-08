@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, qa, main]
+  pull_request:
+    branches: [develop, qa, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build -- --configuration production
+
+      - name: Verify remoteEntry.json exists
+        run: |
+          test -f dist/telemed-ia-appointment-scheduling-portal/browser/remoteEntry.json \
+            || (echo "remoteEntry.json not found" && exit 1)

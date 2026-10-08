@@ -1,0 +1,245 @@
+:host {
+  display: block;
+}
+
+.dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgb(15 23 42 / 42%);
+  backdrop-filter: blur(3px);
+}
+
+.dialog {
+  width: min(100%, 520px);
+  padding: 1.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 24px 60px rgb(15 23 42 / 18%),
+    0 8px 22px rgb(15 23 42 / 10%);
+}
+
+.dialog__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.dialog__icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--color-primary-icon);
+  color: var(--color-primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.dialog__eyebrow {
+  margin: 0 0 0.2rem;
+  color: var(--color-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.dialog__title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.dialog__subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.dialog__subtitle strong {
+  color: var(--color-text);
+}
+
+.dialog__current {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-soft);
+}
+
+.dialog__current span {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.dialog__current strong {
+  color: var(--color-primary-text);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.dialog__section {
+  margin-bottom: 1.25rem;
+}
+
+.dialog__section-title {
+  margin: 0 0 0.75rem;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.dialog__options {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.dialog__options li {
+  margin: 0;
+}
+
+.status-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.status-option:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.status-option:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.status-option__icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.status-option__content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.status-option__content strong {
+  font-size: 0.82rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+}
+
+.status-option__content small {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.status-option__arrow {
+  margin-left: auto;
+  color: var(--color-muted-soft);
+  font-size: 1.1rem;
+}
+
+.status-option[data-status='COMPLETED'] {
+  border-color: #ccebd7;
+}
+
+.status-option[data-status='COMPLETED']
+.status-option__icon {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.status-option[data-status='COMPLETED']:hover:not(:disabled) {
+  background: #f6fff8;
+  border-color: #aee0be;
+}
+
+.status-option[data-status='NO_SHOW'] {
+  border-color: #f2dfae;
+}
+
+.status-option[data-status='NO_SHOW']
+.status-option__icon {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.status-option[data-status='NO_SHOW']:hover:not(:disabled) {
+  background: #fffdf5;
+  border-color: #e9d190;
+}
+
+.status-option[data-status='CANCELLED'] {
+  border-color: #f1cccc;
+}
+
+.status-option[data-status='CANCELLED']
+.status-option__icon {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.status-option[data-status='CANCELLED']:hover:not(:disabled) {
+  background: #fffafa;
+  border-color: #e6aaaa;
+}
+
+.dialog__cancel {
+  width: 100%;
+  min-height: 46px;
+}
+
+@media (max-width: 560px) {
+  .dialog {
+    padding: 1.25rem;
+  }
+
+  .dialog__current {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+}
