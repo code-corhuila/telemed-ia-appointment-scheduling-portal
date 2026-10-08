@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 
 /**
- * Routes exposed to the shell via Native Federation as `./routes`.
+ * Routes exposed to the shell via Native Federation.
  *
- * The shell mounts these at /appointment.
+ * The shell mounts these routes under /appointment.
  */
 export const routes: Routes = [
   {
@@ -11,6 +11,27 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/appointment-list-page.component').then(
         (m) => m.AppointmentListPageComponent,
+      ),
+  },
+  {
+    path: 'book',
+    loadComponent: () =>
+      import('./pages/appointment-book-page.component').then(
+        (m) => m.AppointmentBookPageComponent,
+      ),
+  },
+  {
+    path: 'reschedule/:id',
+    loadComponent: () =>
+      import('./pages/appointment-reschedule-page.component').then(
+        (m) => m.AppointmentReschedulePageComponent,
+      ),
+  },
+  {
+    path: 'professional/schedule',
+    loadComponent: () =>
+      import('./pages/professional-schedule-page.component').then(
+        (m) => m.ProfessionalSchedulePageComponent,
       ),
   },
   {
