@@ -1,0 +1,96 @@
+<div
+  class="dialog__backdrop"
+  (click)="dismiss()"
+>
+  <div
+    class="dialog"
+    role="dialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="dialog__header">
+      <div class="dialog__icon">↕</div>
+
+      <div>
+        <p class="dialog__eyebrow">GESTIÓN DE CITA</p>
+
+        <h2 class="dialog__title">
+          Cambiar estado
+        </h2>
+
+        <p class="dialog__subtitle">
+          Actualiza el estado de la cita
+          <strong>#{{ appointment().id }}</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="dialog__current">
+      <span>Estado actual</span>
+      <strong>{{ appointment().status }}</strong>
+    </div>
+
+    <div class="dialog__section">
+      <p class="dialog__section-title">
+        Selecciona el nuevo estado
+      </p>
+
+      <ul class="dialog__options">
+        @for (option of options; track option) {
+          <li>
+            <button
+              type="button"
+              class="status-option"
+              [attr.data-status]="option"
+              (click)="choose(option)"
+              [disabled]="busy()"
+            >
+              <span class="status-option__icon">
+                @if (option === 'COMPLETED') {
+                  ✓
+                } @else if (option === 'NO_SHOW') {
+                  !
+                } @else {
+                  ×
+                }
+              </span>
+
+              <span class="status-option__content">
+                <strong>
+                  @if (option === 'COMPLETED') {
+                    ATENDIDA
+                  } @else if (option === 'NO_SHOW') {
+                    NO ASISTIÓ
+                  } @else {
+                    CANCELADA
+                  }
+                </strong>
+
+                <small>
+                  @if (option === 'COMPLETED') {
+                    La consulta fue realizada.
+                  } @else if (option === 'NO_SHOW') {
+                    El paciente no asistió.
+                  } @else {
+                    La cita será cancelada.
+                  }
+                </small>
+              </span>
+
+              <span class="status-option__arrow">→</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn--ghost dialog__cancel"
+      (click)="dismiss()"
+      [disabled]="busy()"
+    >
+      Cancelar
+    </button>
+  </div>
+</div>

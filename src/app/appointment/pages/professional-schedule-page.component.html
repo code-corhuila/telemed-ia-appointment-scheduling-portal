@@ -1,0 +1,234 @@
+<section class="schedule">
+  <header class="page-header">
+    <div>
+      <p class="schedule__eyebrow">
+        PANEL PROFESIONAL
+      </p>
+
+      <h1 class="page-title">
+        Mi Agenda
+      </h1>
+
+      <p class="page-subtitle">
+        Gestiona tu jornada y consulta las citas asignadas.
+      </p>
+    </div>
+
+    <a
+      class="btn btn--outline-primary"
+      routerLink="/appointment/professional"
+    >
+      CITAS PROFESIONALES
+    </a>
+  </header>
+
+  @if (loading()) {
+    <div class="state state--loading">
+      <span
+        class="state__spinner"
+        aria-hidden="true"
+      ></span>
+
+      <span>
+        Cargando agenda…
+      </span>
+    </div>
+  } @else if (error(); as message) {
+    <div
+      class="state state--error schedule__error"
+      role="alert"
+    >
+      <div>
+        <strong>
+          No fue posible cargar la agenda.
+        </strong>
+
+        <p>
+          {{ message }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn--ghost"
+        (click)="load()"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else {
+    <section class="professional-head">
+      <div class="professional-head__avatar">
+        <svg
+          width="25"
+          height="25"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6Z"
+          />
+        </svg>
+      </div>
+
+      <div class="professional-head__identity">
+        <p>
+          PROFESIONAL
+        </p>
+
+        <h2>
+          {{ professionalName }}
+        </h2>
+
+        <span>
+          Medicina General
+        </span>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <strong>
+            {{ todayCount() }}
+          </strong>
+
+          <span>
+            CITAS HOY
+          </span>
+        </div>
+
+        <div class="metric">
+          <strong>
+            {{ appointments().length }}
+          </strong>
+
+          <span>
+            CITAS TOTALES
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <header class="table-title">
+        <div>
+          <p>
+            AGENDA PROFESIONAL
+          </p>
+
+          <h2>
+            Agenda completa
+          </h2>
+        </div>
+
+        <span>
+          {{ appointments().length }}
+
+          {{
+            appointments().length === 1
+              ? 'cita'
+              : 'citas'
+          }}
+        </span>
+      </header>
+
+      @if (
+        appointments().length === 0
+      ) {
+        <div class="empty-card">
+          <div class="empty-card__icon">
+            📅
+          </div>
+
+          <h3>
+            No hay citas asignadas
+          </h3>
+
+          <p>
+            Cuando tengas consultas asignadas
+            aparecerán aquí.
+          </p>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Fecha
+                </th>
+
+                <th>
+                  Paciente
+                </th>
+
+                <th>
+                  Especialidad
+                </th>
+
+                <th>
+                  Estado
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                appointment of appointments();
+                track appointment.id
+              ) {
+                <tr>
+                  <td>
+                    <strong>
+                      {{
+                        appointment.start
+                          | date:
+                            'dd/MM/yyyy'
+                      }}
+                    </strong>
+
+                    <span>
+                      {{
+                        appointment.start
+                          | date:
+                            'HH:mm'
+                      }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <strong>
+                      {{
+                        patientDisplayName(
+                          appointment.patientId
+                        )
+                      }}
+                    </strong>
+                  </td>
+
+                  <td>
+                    Medicina General
+                  </td>
+
+                  <td>
+                    <span
+                      class="badge badge--{{
+                        appointment.status.toLowerCase()
+                      }}"
+                    >
+                      {{
+                        statusLabel(
+                          appointment.status
+                        )
+                      }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</section>

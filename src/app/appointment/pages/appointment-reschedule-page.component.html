@@ -1,0 +1,62 @@
+<section class="reschedule-page">
+  <a
+    class="back-link"
+    routerLink="/appointment"
+  >
+    <span aria-hidden="true">←</span>
+    Volver a mis citas
+  </a>
+
+  <header class="page-header reschedule-page__header">
+    <div>
+      <p class="reschedule-page__eyebrow">
+        GESTIÓN DE CITAS
+      </p>
+
+      <h1 class="page-title">
+        Reprogramar cita
+      </h1>
+
+      <p class="page-subtitle">
+        Selecciona un nuevo horario para tu consulta.
+      </p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="state state--loading">
+      <span
+        class="state__spinner"
+        aria-hidden="true"
+      ></span>
+
+      <span>
+        Cargando cita…
+      </span>
+    </div>
+  } @else if (error(); as message) {
+    <div
+      class="state state--error reschedule-page__error"
+      role="alert"
+    >
+      <div>
+        <strong>No fue posible cargar la cita.</strong>
+
+        <p>{{ message }}</p>
+      </div>
+
+      <a
+        class="btn btn--ghost"
+        routerLink="/appointment"
+      >
+        Volver a mis citas
+      </a>
+    </div>
+  } @else if (appointment(); as appt) {
+    <app-appointment-reschedule-form
+      [appointment]="appt"
+      (rescheduled)="onRescheduled()"
+      (cancel)="goBack()"
+    />
+  }
+</section>
