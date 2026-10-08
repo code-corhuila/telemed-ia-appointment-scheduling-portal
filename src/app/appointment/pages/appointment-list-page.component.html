@@ -1,20 +1,25 @@
 <section class="appointments">
   <header class="page-header">
     <div class="page-header__content">
-      <h1 class="page-title">Mis Citas</h1>
+      <p class="appointments__eyebrow">
+        AGENDA
+      </p>
+
+      <h1 class="page-title">
+        Mis Citas
+      </h1>
+
       <p class="page-subtitle">
         Consulta, cancela o reprograma tus citas.
       </p>
     </div>
 
-    <button
-      type="button"
+    <a
       class="btn btn--primary appointments__new"
-      (click)="startCreate()"
-      [disabled]="vm().action !== 'none'"
+      routerLink="/appointment/book"
     >
       NUEVA CITA
-    </button>
+    </a>
   </header>
 
   @if (vm().action === 'create') {
@@ -22,13 +27,21 @@
       (created)="onActionCompleted()"
       (cancel)="closeAction()"
     />
-  } @else if (vm().action === 'reschedule' && vm().selected; as appt) {
+  } @else if (
+    vm().action === 'reschedule' &&
+    vm().selected;
+    as appt
+  ) {
     <app-appointment-reschedule-form
       [appointment]="appt"
       (rescheduled)="onActionCompleted()"
       (cancel)="closeAction()"
     />
-  } @else if (vm().action === 'cancel' && vm().selected; as appt) {
+  } @else if (
+    vm().action === 'cancel' &&
+    vm().selected;
+    as appt
+  ) {
     <app-appointment-cancel-form
       [appointment]="appt"
       (cancelled)="onActionCompleted()"
@@ -36,13 +49,25 @@
     />
   } @else if (vm().loading) {
     <div class="state state--loading">
-      <span class="state__spinner" aria-hidden="true"></span>
-      <span>Cargando citas…</span>
+      <span
+        class="state__spinner"
+        aria-hidden="true"
+      ></span>
+
+      <span>
+        Cargando citas…
+      </span>
     </div>
   } @else if (vm().error; as err) {
-    <div class="state state--error appointments__state" role="alert">
+    <div
+      class="state state--error appointments__state"
+      role="alert"
+    >
       <div>
-        <strong>No fue posible cargar tus citas.</strong>
+        <strong>
+          No fue posible cargar tus citas.
+        </strong>
+
         <p>{{ err.message }}</p>
       </div>
 
@@ -60,16 +85,26 @@
       role="tablist"
       aria-label="Filtrar citas"
     >
-      @for (tab of tabs; track tab.key) {
+      @for (
+        tab of tabs;
+        track tab.key
+      ) {
         <button
           type="button"
           role="tab"
           class="tab"
-          [class.tab--active]="vm().tab === tab.key"
-          [attr.aria-selected]="vm().tab === tab.key"
+          [class.tab--active]="
+            vm().tab === tab.key
+          "
+          [attr.aria-selected]="
+            vm().tab === tab.key
+          "
           (click)="setTab(tab.key)"
         >
-          <span>{{ tab.label }}</span>
+          <span>
+            {{ tab.label }}
+          </span>
+
           <span class="tab__count">
             {{ tabCounts()[tab.key] }}
           </span>
@@ -79,22 +114,25 @@
 
     @if (filteredAppointments().length === 0) {
       <div class="empty-card">
-        <div class="empty-card__icon">📅</div>
+        <div class="empty-card__icon">
+          📅
+        </div>
 
-        <h2>No hay citas</h2>
+        <h2>
+          No hay citas
+        </h2>
 
         <p>
           No tienes citas en la categoría seleccionada.
         </p>
 
         @if (vm().tab === 'ALL') {
-          <button
-            type="button"
+          <a
             class="btn btn--primary"
-            (click)="startCreate()"
+            routerLink="/appointment/book"
           >
             NUEVA CITA
-          </button>
+          </a>
         }
       </div>
     } @else {
@@ -103,8 +141,12 @@
           appointment of filteredAppointments();
           track appointment.id
         ) {
-          <article class="appointment-card">
-            <header class="appointment-card__head">
+          <article
+            class="appointment-card"
+          >
+            <header
+              class="appointment-card__head"
+            >
               <div
                 class="appointment-card__avatar"
                 aria-hidden="true"
@@ -114,7 +156,6 @@
                   height="21"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  aria-hidden="true"
                 >
                   <path
                     d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6Z"
@@ -123,9 +164,15 @@
               </div>
 
               <span
-                class="badge badge--{{ appointment.status.toLowerCase() }}"
+                class="badge badge--{{
+                  appointment.status.toLowerCase()
+                }}"
               >
-                {{ statusLabel(appointment.status) }}
+                {{
+                  statusLabel(
+                    appointment.status
+                  )
+                }}
               </span>
 
               <button
@@ -138,17 +185,31 @@
               </button>
             </header>
 
-            <div class="appointment-card__body">
-              <h2 class="appointment-card__title">
-                Profesional #{{ appointment.professionalId }}
+            <div
+              class="appointment-card__body"
+            >
+              <h2
+                class="appointment-card__title"
+              >
+                {{
+                  professionalDisplayName(
+                    appointment.professionalId
+                  )
+                }}
               </h2>
 
-              <p class="appointment-card__specialty">
+              <p
+                class="appointment-card__specialty"
+              >
                 Medicina General
               </p>
 
-              <div class="appointment-card__details">
-                <p class="appointment-card__meta">
+              <div
+                class="appointment-card__details"
+              >
+                <p
+                  class="appointment-card__meta"
+                >
                   <span
                     class="appointment-card__icon"
                     aria-hidden="true"
@@ -159,12 +220,15 @@
                   <span>
                     {{
                       appointment.start
-                        | date: "EEEE, d 'de' MMMM 'de' y"
+                        | date:
+                          "EEEE, d 'de' MMMM 'de' y"
                     }}
                   </span>
                 </p>
 
-                <p class="appointment-card__meta">
+                <p
+                  class="appointment-card__meta"
+                >
                   <span
                     class="appointment-card__icon"
                     aria-hidden="true"
@@ -173,63 +237,104 @@
                   </span>
 
                   <span>
-                    {{ appointment.start | date: 'HH:mm' }}
+                    {{
+                      appointment.start
+                        | date: 'HH:mm'
+                    }}
                     –
-                    {{ appointment.end | date: 'HH:mm' }}
+                    {{
+                      appointment.end
+                        | date: 'HH:mm'
+                    }}
                   </span>
                 </p>
               </div>
 
               @if (
-                appointment.status === 'CANCELLED' &&
+                appointment.status ===
+                  'CANCELLED' &&
                 appointment.cancellationReason
               ) {
-                <div class="appointment-card__reason">
-                  <span>Motivo:</span>
-                  <em>{{ appointment.cancellationReason }}</em>
+                <div
+                  class="appointment-card__reason"
+                >
+                  <span>
+                    Motivo:
+                  </span>
+
+                  <em>
+                    {{
+                      appointment.cancellationReason
+                    }}
+                  </em>
                 </div>
               }
 
-              @if (appointment.status === 'RESCHEDULED') {
-                <div class="appointment-card__reason">
-                  <span>Motivo:</span>
+              @if (
+                appointment.status ===
+                'RESCHEDULED'
+              ) {
+                <div
+                  class="appointment-card__reason"
+                >
+                  <span>
+                    Motivo:
+                  </span>
+
                   <em>
-                    Reagendada por solicitud del paciente
+                    Reagendada por solicitud
+                    del paciente
                   </em>
                 </div>
               }
             </div>
 
             @if (
-              appointment.status === 'CANCELLED' ||
-              appointment.status === 'CONFIRMED' ||
-              appointment.status === 'RESCHEDULED'
+              appointment.status ===
+                'CANCELLED' ||
+              appointment.status ===
+                'CONFIRMED' ||
+              appointment.status ===
+                'RESCHEDULED'
             ) {
-              <footer class="appointment-card__actions">
-                @if (appointment.status === 'CANCELLED') {
-                  <button
-                    type="button"
+              <footer
+                class="appointment-card__actions"
+              >
+                @if (
+                  appointment.status ===
+                  'CANCELLED'
+                ) {
+                  <a
                     class="btn btn--outline-primary appointment-card__full"
-                    (click)="startReschedule(appointment)"
+                    [routerLink]="[
+                      '/appointment/reschedule',
+                      appointment.id
+                    ]"
                   >
                     REAGENDAR
-                  </button>
+                  </a>
                 } @else {
                   <button
                     type="button"
                     class="btn btn--danger-outline"
-                    (click)="startCancel(appointment)"
+                    (click)="
+                      startCancel(
+                        appointment
+                      )
+                    "
                   >
                     CANCELAR
                   </button>
 
-                  <button
-                    type="button"
+                  <a
                     class="btn btn--primary"
-                    (click)="startReschedule(appointment)"
+                    [routerLink]="[
+                      '/appointment/reschedule',
+                      appointment.id
+                    ]"
                   >
                     REPROGRAMAR
-                  </button>
+                  </a>
                 }
               </footer>
             }
