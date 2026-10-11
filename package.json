@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "ng serve --port 4203",
+    "start:mock": "ng run telemed-ia-appointment-scheduling-portal:serve-mock",
     "build": "ng build"
   },
   "dependencies": {
