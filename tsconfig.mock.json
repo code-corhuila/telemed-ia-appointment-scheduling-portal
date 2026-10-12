@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app-mock",
+    "types": []
+  },
+  "files": ["src/mocks/mock-main.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+}
