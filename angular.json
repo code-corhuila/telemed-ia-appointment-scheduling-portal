@@ -31,8 +31,15 @@
             "browser": "src/bootstrap.ts",
             "index": "src/index.html",
             "tsConfig": "tsconfig.app.json",
-            "assets": [{ "glob": "**/*", "input": "public" }],
-            "styles": ["src/styles.css"],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
             "externalDependencies": [
               "shell/apiClient",
               "shell/session",
@@ -48,6 +55,13 @@
             "development": {
               "optimization": false,
               "sourceMap": true
+            },
+            "mock": {
+              "optimization": false,
+              "sourceMap": true,
+              "browser": "src/mocks/mock-main.ts",
+              "tsConfig": "tsconfig.mock.json",
+              "externalDependencies": []
             }
           }
         },
@@ -68,6 +82,13 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "serve-mock": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 4203,
+            "buildTarget": "telemed-ia-appointment-scheduling-portal:esbuild:mock"
+          }
         }
       }
     }
