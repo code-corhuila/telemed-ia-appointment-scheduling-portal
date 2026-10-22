@@ -538,20 +538,18 @@ export class AppointmentCreateFormComponent {
 
   protected readonly form =
     this.fb.group({
-      patientId: this.fb.control<number | null>(
+      patientId: this.fb.control<string | null>(
         currentUserId(),
         [
           Validators.required,
-          Validators.min(1),
         ],
       ),
 
       professionalId:
-        this.fb.control<number | null>(
+        this.fb.control<string | null>(
           null,
           [
             Validators.required,
-            Validators.min(1),
           ],
         ),
 
@@ -580,8 +578,8 @@ export class AppointmentCreateFormComponent {
     const raw = this.form.getRawValue();
 
     if (
-      raw.patientId === null ||
-      raw.professionalId === null ||
+      !raw.patientId ||
+      !raw.professionalId ||
       !raw.start ||
       !raw.end
     ) {
