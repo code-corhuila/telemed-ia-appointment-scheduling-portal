@@ -14,6 +14,9 @@ import { AppointmentApiService } from '../data/appointment-api.service';
 import type { Appointment } from '../model/appointment';
 import { AppointmentRescheduleFormComponent } from '../components/appointment-reschedule-form.component';
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 @Component({
   selector: 'app-appointment-reschedule-page',
   standalone: true,
@@ -30,16 +33,16 @@ export class AppointmentReschedulePageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly api = inject(AppointmentApiService);
 
-  private readonly devPatientId = 1;
+  private readonly devPatientId = 'b0000000-0000-0000-0000-000000000001';
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly appointment = signal<Appointment | null>(null);
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
 
-    if (!Number.isInteger(id) || id <= 0) {
+    if (!UUID_PATTERN.test(id)) {
       this.loading.set(false);
       this.error.set('El identificador de la cita no es válido.');
       return;
@@ -48,7 +51,7 @@ export class AppointmentReschedulePageComponent implements OnInit {
     this.loadAppointment(id);
   }
 
-  private loadAppointment(id: number): void {
+  private loadAppointment(id: string): void {
     this.loading.set(true);
     this.error.set(null);
 

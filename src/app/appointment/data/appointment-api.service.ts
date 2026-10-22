@@ -19,6 +19,7 @@ import type { AppointmentStatus } from '../model/appointment';
  *
  * Endpoints (contract `appointment-service.yaml`):
  *   POST   /appointments/                    create
+ *   GET    /appointments/{id}                get by id
  *   GET    /appointments/patient/{id}        list by patient (paginated)
  *   GET    /appointments/professional/{id}   list by professional (paginated)
  *   PATCH  /appointments/{id}/cancel         cancel
@@ -50,8 +51,15 @@ export class AppointmentApiService {
     });
   }
 
+  getById(appointmentId: string): Observable<Appointment> {
+    return this.http.get<Appointment>(
+      `${this.baseUrl}/appointments/${appointmentId}`,
+      { headers: this.headers() },
+    );
+  }
+
   listByPatient(
-    patientId: number,
+    patientId: string,
     page = 1,
     limit = 20,
   ): Observable<Page<Appointment>> {
@@ -62,7 +70,7 @@ export class AppointmentApiService {
   }
 
   listByProfessional(
-    professionalId: number,
+    professionalId: string,
     page = 1,
     limit = 20,
   ): Observable<Page<Appointment>> {
@@ -72,7 +80,7 @@ export class AppointmentApiService {
     );
   }
 
-  cancel(appointmentId: number, reason: string): Observable<Appointment> {
+  cancel(appointmentId: string, reason: string): Observable<Appointment> {
     return this.http.patch<Appointment>(
       `${this.baseUrl}/appointments/${appointmentId}/cancel`,
       { reason },
@@ -81,7 +89,7 @@ export class AppointmentApiService {
   }
 
   reschedule(
-    appointmentId: number,
+    appointmentId: string,
     payload: RescheduleAppointmentPayload,
   ): Observable<Appointment> {
     return this.http.patch<Appointment>(
@@ -92,7 +100,7 @@ export class AppointmentApiService {
   }
 
   updateStatus(
-    appointmentId: number,
+    appointmentId: string,
     status: AppointmentStatus,
   ): Observable<Appointment> {
     return this.http.patch<Appointment>(

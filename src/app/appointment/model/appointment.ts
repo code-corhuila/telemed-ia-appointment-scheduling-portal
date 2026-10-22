@@ -2,6 +2,7 @@
  * Domain types for the appointment-scheduling portal.
  *
  * Field names mirror the JSON contract of the API in camelCase.
+ * Cross-domain identifiers are UUID strings; page metadata stays numeric.
  */
 
 export type AppointmentStatus =
@@ -20,22 +21,22 @@ export const APPOINTMENT_STATUSES: readonly AppointmentStatus[] = [
 ] as const;
 
 export interface Appointment {
-  id: number;
-  patientId: number;
-  professionalId: number;
+  id: string;
+  patientId: string;
+  professionalId: string;
   start: string;
   end: string;
   status: AppointmentStatus;
-  preconsultationSummaryId: number | null;
-  postSummaryId: number | null;
+  preconsultationSummaryId: string | null;
+  postSummaryId: string | null;
   cancellationReason: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateAppointmentPayload {
-  patientId: number;
-  professionalId: number;
+  patientId: string;
+  professionalId: string;
   start: string;
   end: string;
 }

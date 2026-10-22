@@ -43,7 +43,7 @@ export class ProfessionalAppointmentListPageComponent
     inject(AppointmentApiService);
 
   private readonly professionalId =
-    currentUserId() ?? 2;
+    currentUserId() ?? 'c0000000-0000-0000-0000-000000000002';
 
   readonly loading = signal(true);
   readonly appointments =
@@ -145,7 +145,7 @@ export class ProfessionalAppointmentListPageComponent
   }
 
   protected patientDisplayName(
-    patientId: number,
+    patientId: string,
   ): string {
     return patientName(patientId);
   }

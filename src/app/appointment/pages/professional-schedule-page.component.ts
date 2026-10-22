@@ -36,7 +36,7 @@ export class ProfessionalSchedulePageComponent
     inject(AppointmentApiService);
 
   private readonly professionalId =
-    currentUserId() ?? 2;
+    currentUserId() ?? 'c0000000-0000-0000-0000-000000000002';
 
   /**
    * Nombre que se muestra en el encabezado
@@ -123,7 +123,7 @@ export class ProfessionalSchedulePageComponent
    * por el contrato del API.
    */
   protected patientDisplayName(
-    patientId: number,
+    patientId: string,
   ): string {
     return patientName(patientId);
   }
