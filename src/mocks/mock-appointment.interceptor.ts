@@ -14,16 +14,19 @@ import {
 
 const LATENCY_MS = 300;
 const API_PREFIX = '/api/v1/appointments';
+const UUID_RE = '([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 
 function ok<T>(body: T): HttpResponse<T> {
   return new HttpResponse<T>({ status: 200, body });
 }
 
-function nextId(): number {
-  return Math.max(0, ...MOCK_APPOINTMENTS.map((a) => a.id)) + 1;
+function nextId(): string {
+  // Deterministic `a...` prefix so new appointments stay traceable.
+  const next = MOCK_APPOINTMENTS.length + 1;
+  return `a0000000-0000-0000-0000-${String(next).padStart(12, '0')}`;
 }
 
-function findAppointment(id: number): Appointment | undefined {
+function findAppointment(id: string): Appointment | undefined {
   return MOCK_APPOINTMENTS.find((a) => a.id === id);
 }
 
@@ -61,9 +64,11 @@ export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   // GET /api/v1/appointments/patient/:id
-  const byPatient = url.match(/\/api\/v1\/appointments\/patient\/(\d+)/);
+  const byPatient = url.match(
+    new RegExp(`/api/v1/appointments/patient/${UUID_RE}`),
+  );
   if (method === 'GET' && byPatient) {
-    const patientId = Number(byPatient[1]);
+    const patientId = byPatient[1];
     const items = MOCK_APPOINTMENTS.filter((a) => a.patientId === patientId);
     const page = Number(req.params.get('page') ?? 1);
     const limit = Number(req.params.get('limit') ?? 20);
@@ -72,9 +77,11 @@ export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   // GET /api/v1/appointments/professional/:id
-  const byProfessional = url.match(/\/api\/v1\/appointments\/professional\/(\d+)/);
+  const byProfessional = url.match(
+    new RegExp(`/api/v1/appointments/professional/${UUID_RE}`),
+  );
   if (method === 'GET' && byProfessional) {
-    const professionalId = Number(byProfessional[1]);
+    const professionalId = byProfessional[1];
     const items = MOCK_APPOINTMENTS.filter(
       (a) => a.professionalId === professionalId,
     );
@@ -84,10 +91,28 @@ export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
     return of(ok(body)).pipe(delay(LATENCY_MS));
   }
 
+  // GET /api/v1/appointments/:id  → single
+  const byId = url.match(new RegExp(`/api/v1/appointments/${UUID_RE}(?:\\?|$)`));
+  if (method === 'GET' && byId) {
+    const id = byId[1];
+    const target = findAppointment(id);
+    if (target) {
+      return of(ok(target)).pipe(delay(LATENCY_MS));
+    }
+    return of(
+      new HttpResponse({
+        status: 404,
+        body: { code: 'NOT_FOUND', message: 'Appointment not found' },
+      }),
+    ).pipe(delay(LATENCY_MS));
+  }
+
   // PATCH /api/v1/appointments/:id/cancel
-  const cancel = url.match(/\/api\/v1\/appointments\/(\d+)\/cancel/);
+  const cancel = url.match(
+    new RegExp(`/api/v1/appointments/${UUID_RE}/cancel`),
+  );
   if (method === 'PATCH' && cancel) {
-    const id = Number(cancel[1]);
+    const id = cancel[1];
     const target = findAppointment(id);
     if (target) {
       target.status = 'CANCELLED';
@@ -100,9 +125,11 @@ export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   // PATCH /api/v1/appointments/:id/reschedule
-  const reschedule = url.match(/\/api\/v1\/appointments\/(\d+)\/reschedule/);
+  const reschedule = url.match(
+    new RegExp(`/api/v1/appointments/${UUID_RE}/reschedule`),
+  );
   if (method === 'PATCH' && reschedule) {
-    const id = Number(reschedule[1]);
+    const id = reschedule[1];
     const target = findAppointment(id);
     if (target) {
       const payload = req.body as RescheduleAppointmentPayload;
@@ -116,9 +143,11 @@ export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   // PATCH /api/v1/appointments/:id/status
-  const status = url.match(/\/api\/v1\/appointments\/(\d+)\/status/);
+  const status = url.match(
+    new RegExp(`/api/v1/appointments/${UUID_RE}/status`),
+  );
   if (method === 'PATCH' && status) {
-    const id = Number(status[1]);
+    const id = status[1];
     const target = findAppointment(id);
     if (target) {
       const body = req.body as { status?: Appointment['status'] } | null;
@@ -129,7 +158,6 @@ export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  // Fallback: no matcheó ninguna ruta de mock
   console.warn('[mock] Unhandled appointment request:', method, url);
   return next(req);
 };
