@@ -443,6 +443,11 @@ export class AppointmentRescheduleFormComponent {
             code: 'UNKNOWN',
             message: err?.message ?? 'Unexpected error',
           };
+
+          if (apiError.code === 'PATIENT_SLOT_CONFLICT') {
+            apiError.message = 'Ya tienes una cita a esa hora. Por favor, elige otro horario.';
+          }
+
           this.serverError.set(apiError);
         },
       });
