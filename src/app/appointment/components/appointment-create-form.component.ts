@@ -621,6 +621,10 @@ export class AppointmentCreateFormComponent {
                 'Unexpected error',
             };
 
+          if (apiError.code === 'PATIENT_SLOT_CONFLICT') {
+            apiError.message = 'Ya tienes una cita a esa hora. Por favor, elige otro horario.';
+          }
+
           this.serverError.set(apiError);
         },
       });
