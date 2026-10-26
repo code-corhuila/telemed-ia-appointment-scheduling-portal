@@ -172,27 +172,6 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
                 }
               </div>
 
-              <div class="field">
-                <label for="end">
-                  Fin
-                </label>
-
-                <input
-                  id="end"
-                  class="input"
-                  type="datetime-local"
-                  formControlName="end"
-                />
-
-                @if (
-                  form.controls.end.touched &&
-                  form.controls.end.invalid
-                ) {
-                  <span class="error">
-                    La fecha de fin es obligatoria.
-                  </span>
-                }
-              </div>
             </div>
           </div>
         </div>
@@ -561,10 +540,6 @@ export class AppointmentCreateFormComponent {
         ],
       ),
 
-      end: this.fb.control<string | null>(
-        null,
-        [Validators.required],
-      ),
     });
 
   protected submit(): void {
@@ -580,8 +555,7 @@ export class AppointmentCreateFormComponent {
     if (
       !raw.patientId ||
       !raw.professionalId ||
-      !raw.start ||
-      !raw.end
+      !raw.start
     ) {
       return;
     }
@@ -596,9 +570,6 @@ export class AppointmentCreateFormComponent {
           professionalId: raw.professionalId,
           start: new Date(
             raw.start,
-          ).toISOString(),
-          end: new Date(
-            raw.end,
           ).toISOString(),
         },
         this.idempotencyKey,
