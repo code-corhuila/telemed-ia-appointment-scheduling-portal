@@ -93,27 +93,9 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
                   </span>
                 }
               </div>
-
-              <div class="field">
-                <label for="newEnd">Nuevo fin</label>
-
-                <input
-                  id="newEnd"
-                  class="input"
-                  type="datetime-local"
-                  formControlName="end"
-                />
-
-                @if (
-                  form.controls.end.touched &&
-                  form.controls.end.invalid
-                ) {
-                  <span class="error">
-                    La fecha de fin es obligatoria.
-                  </span>
-                }
-              </div>
             </div>
+
+              
           </div>
         </div>
 
@@ -414,14 +396,13 @@ export class AppointmentRescheduleFormComponent {
 
   protected readonly form = this.fb.group({
     start: this.fb.control<string | null>(null, [Validators.required, futureStart]),
-    end: this.fb.control<string | null>(null, [Validators.required]),
   });
 
   protected submit(): void {
     if (this.form.invalid || this.submitting()) return;
 
     const raw = this.form.getRawValue();
-    if (!raw.start || !raw.end) return;
+    if (!raw.start) return;
 
     this.submitting.set(true);
     this.serverError.set(null);
@@ -429,7 +410,6 @@ export class AppointmentRescheduleFormComponent {
     this.api
       .reschedule(this.appointment.id, {
         start: new Date(raw.start).toISOString(),
-        end: new Date(raw.end).toISOString(),
       })
       .subscribe({
         next: () => {

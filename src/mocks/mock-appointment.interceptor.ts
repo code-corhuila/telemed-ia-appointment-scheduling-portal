@@ -51,7 +51,7 @@ export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
       patientId: payload.patientId,
       professionalId: payload.professionalId,
       start: payload.start,
-      end: payload.end,
+      end: new Date(new Date(payload.start).getTime() + 30*60000).toISOString(),
       status: 'CONFIRMED',
       preconsultationSummaryId: null,
       postSummaryId: null,
@@ -134,7 +134,7 @@ export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
     if (target) {
       const payload = req.body as RescheduleAppointmentPayload;
       target.start = payload.start;
-      target.end = payload.end;
+      target.end = new Date(new Date(payload.start).getTime() + 30*60000).toISOString();
       target.status = 'RESCHEDULED';
       target.updatedAt = new Date().toISOString().slice(0, 19);
       return of(ok(target)).pipe(delay(LATENCY_MS));

@@ -38,12 +38,10 @@ export interface CreateAppointmentPayload {
   patientId: string;
   professionalId: string;
   start: string;
-  end: string;
 }
 
 export interface RescheduleAppointmentPayload {
   start: string;
-  end: string;
 }
 
 export interface PageMeta {
