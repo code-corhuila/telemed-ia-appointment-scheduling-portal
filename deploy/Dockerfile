@@ -19,4 +19,4 @@ COPY --from=build /app/dist/telemed-ia-appointment-scheduling-portal/browser /us
 EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://localhost/remoteEntry.json >/dev/null || exit 1
+  CMD wget -qO- http://127.0.0.1/remoteEntry.json >/dev/null || exit 1
