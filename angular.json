@@ -71,7 +71,8 @@
             "port": 4203,
             "headers": {
               "Access-Control-Allow-Origin": "http://localhost:4200"
-            }
+            },
+            "configFile": "federation.config.js"
           },
           "configurations": {
             "production": {
@@ -87,7 +88,11 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "port": 4203,
-            "buildTarget": "telemed-ia-appointment-scheduling-portal:esbuild:mock"
+            "buildTarget": "telemed-ia-appointment-scheduling-portal:esbuild:mock",
+            "configFile": "federation.config.js",
+            "headers": {
+              "Access-Control-Allow-Origin": "http://localhost:4200"
+            }
           }
         }
       }
