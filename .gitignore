@@ -26,4 +26,16 @@ Thumbs.db
 # Local artifacts
 keys/
 *.ps1
+
+node_modules
+dist
+.git
+.github
+.vscode
+.idea
+*.log
+nginx.local.conf
+coverage
+.angular
+
 nginx.local.conf
