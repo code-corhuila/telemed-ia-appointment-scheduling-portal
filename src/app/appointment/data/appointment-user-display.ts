@@ -1,39 +1,44 @@
 export interface ProfessionalDisplay {
-  readonly id: number;
+  readonly id: string;
   readonly name: string;
   readonly specialty: string;
 }
 
+/**
+ * Development directory. IDs use prefixed deterministic UUIDs so that
+ * patients, professionals and appointments are easy to tell apart in
+ * mock mode and fixtures.
+ */
 export const PROFESSIONAL_DIRECTORY: readonly ProfessionalDisplay[] = [
   {
-    id: 2,
+    id: 'c0000000-0000-0000-0000-000000000002',
     name: 'Dra. Ana Martínez',
     specialty: 'Medicina General',
   },
   {
-    id: 3,
+    id: 'c0000000-0000-0000-0000-000000000003',
     name: 'Dr. Roberto Silva',
     specialty: 'Cardiología',
   },
   {
-    id: 4,
+    id: 'c0000000-0000-0000-0000-000000000004',
     name: 'Dra. Luisa Fernández',
     specialty: 'Dermatología',
   },
   {
-    id: 5,
+    id: 'c0000000-0000-0000-0000-000000000005',
     name: 'Dr. Miguel Torres',
     specialty: 'Pediatría',
   },
 ];
 
-const PATIENT_DIRECTORY: Readonly<Record<number, string>> = {
-  1: 'Juan Pérez',
-  2: 'María García',
+const PATIENT_DIRECTORY: Readonly<Record<string, string>> = {
+  'b0000000-0000-0000-0000-000000000001': 'Juan Pérez',
+  'b0000000-0000-0000-0000-000000000002': 'María García',
 };
 
 interface JwtPayload {
-  readonly sub?: string | number;
+  readonly sub?: string;
   readonly name?: string;
   readonly role?: string;
 }
@@ -86,16 +91,17 @@ export function currentUserClaims(): JwtPayload | null {
   return decodePayload(token);
 }
 
-export function currentUserId(): number | null {
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function currentUserId(): string | null {
   const claims = currentUserClaims();
 
   if (!claims?.sub) {
     return null;
   }
 
-  const id = Number(claims.sub);
-
-  return Number.isInteger(id) && id > 0 ? id : null;
+  return UUID_PATTERN.test(claims.sub) ? claims.sub : null;
 }
 
 export function currentUserRole(): string | null {
@@ -125,7 +131,7 @@ export function currentUserName(): string {
 }
 
 export function professionalName(
-  professionalId: number,
+  professionalId: string,
 ): string {
   return (
     PROFESSIONAL_DIRECTORY.find(
@@ -136,7 +142,7 @@ export function professionalName(
 }
 
 export function professionalSpecialty(
-  professionalId: number,
+  professionalId: string,
 ): string {
   return (
     PROFESSIONAL_DIRECTORY.find(
@@ -147,7 +153,7 @@ export function professionalSpecialty(
 }
 
 export function patientName(
-  patientId: number,
+  patientId: string,
 ): string {
   return (
     PATIENT_DIRECTORY[patientId] ??

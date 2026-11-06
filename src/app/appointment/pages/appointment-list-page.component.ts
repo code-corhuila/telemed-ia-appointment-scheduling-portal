@@ -64,7 +64,7 @@ export class AppointmentListPageComponent
     inject(AppointmentApiService);
 
   private readonly patientId =
-    currentUserId() ?? 1;
+    currentUserId() ?? 'b0000000-0000-0000-0000-000000000001';
 
   protected readonly vm = signal<VM>({
     loading: true,
@@ -238,7 +238,7 @@ export class AppointmentListPageComponent
   }
 
   protected professionalDisplayName(
-    professionalId: number,
+    professionalId: string,
   ): string {
     return professionalName(
       professionalId,
@@ -246,7 +246,7 @@ export class AppointmentListPageComponent
   }
 
   protected patientDisplayName(
-    patientId: number,
+    patientId: string,
   ): string {
     return patientName(patientId);
   }
