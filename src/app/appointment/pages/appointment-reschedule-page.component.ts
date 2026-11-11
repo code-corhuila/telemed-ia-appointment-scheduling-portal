@@ -33,8 +33,6 @@ export class AppointmentReschedulePageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly api = inject(AppointmentApiService);
 
-  private readonly devPatientId = 'b0000000-0000-0000-0000-000000000001';
-
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly appointment = signal<Appointment | null>(null);
@@ -55,26 +53,19 @@ export class AppointmentReschedulePageComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.api.listByPatient(this.devPatientId).subscribe({
-      next: (page) => {
-        const found = page.data.find(
-          (appointment) => appointment.id === id,
-        );
-
-        if (!found) {
-          this.appointment.set(null);
-          this.error.set(
-            'No se encontró la cita o no pertenece al paciente actual.',
-          );
-          this.loading.set(false);
-          return;
-        }
-
-        this.appointment.set(found);
+    // The API checks that the appointment belongs to the signed-in user.
+    this.api.getById(id).subscribe({
+      next: (appointment) => {
+        this.appointment.set(appointment);
         this.loading.set(false);
       },
       error: (err) => {
         this.appointment.set(null);
+        if (err?.status === 403 || err?.status === 404) {
+          this.error.set('No se encontró la cita o no pertenece al paciente actual.');
+          this.loading.set(false);
+          return;
+        }
         this.error.set(
           err?.error?.message ??
             err?.message ??
