@@ -11,6 +11,10 @@ import {
   MOCK_APPOINTMENTS,
   makePage,
 } from './fixtures/appointment.fixtures';
+import {
+  MOCK_PATIENT_NAMES,
+  MOCK_PROFESSIONALS,
+} from './fixtures/people.fixtures';
 
 const LATENCY_MS = 300;
 const API_PREFIX = '/api/v1/appointments';
@@ -31,11 +35,24 @@ function findAppointment(id: string): Appointment | undefined {
 }
 
 /**
- * Intercepts every `/api/v1/appointments/*` request and resolves it from
+ * Intercepts every `/api/v1/appointments/*` request, plus the professional
+ * list and the patient names, and resolves them from
  * the in-memory fixtures. Applied only in mock mode via `mock-main.ts`.
  */
 export const mockAppointmentInterceptor: HttpInterceptorFn = (req, next) => {
   const url = req.url;
+
+  // GET /api/v1/professionals → names of the professionals
+  if (req.method.toUpperCase() === 'GET' && /\/api\/v1\/professionals\/?$/.test(url)) {
+    return of(ok({ data: MOCK_PROFESSIONALS })).pipe(delay(LATENCY_MS));
+  }
+
+  // GET /api/v1/auth/accounts/names?ids= → patient names (identity DEC-013)
+  if (req.method.toUpperCase() === 'GET' && url.endsWith('/api/v1/auth/accounts/names')) {
+    const ids = (req.params.get('ids') ?? '').split(',');
+    const data = MOCK_PATIENT_NAMES.filter((name) => ids.includes(name.id));
+    return of(ok({ data })).pipe(delay(LATENCY_MS));
+  }
 
   if (!url.startsWith(API_PREFIX)) {
     return next(req);

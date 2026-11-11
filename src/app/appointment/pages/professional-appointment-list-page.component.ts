@@ -17,8 +17,8 @@ import {
 import { ApiError } from '../model/api-error';
 import {
   currentUserId,
-  patientName,
 } from '../data/appointment-user-display';
+import { PeopleDirectoryService } from '../data/people-directory.service';
 import { StatusChangeDialogComponent } from '../components/status-change-dialog.component';
 
 @Component({
@@ -42,6 +42,9 @@ export class ProfessionalAppointmentListPageComponent
 {
   private readonly api =
     inject(AppointmentApiService);
+
+  private readonly directory =
+    inject(PeopleDirectoryService);
 
   private readonly professionalId =
     currentUserId() ?? 'c0000000-0000-0000-0000-000000000002';
@@ -81,6 +84,10 @@ export class ProfessionalAppointmentListPageComponent
         next: (page) => {
           this.appointments.set(
             page.data,
+          );
+
+          this.directory.resolvePatients(
+            page.data.map((appointment) => appointment.patientId),
           );
 
           this.loading.set(false);
@@ -148,7 +155,7 @@ export class ProfessionalAppointmentListPageComponent
   protected patientDisplayName(
     patientId: string,
   ): string {
-    return patientName(patientId);
+    return this.directory.patientName(patientId);
   }
 
   protected statusLabel(

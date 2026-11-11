@@ -7,8 +7,7 @@
  *   ?mockRole=PROFESSIONAL&mockId=2&mockName=Dra.%20Ana%20Mart%C3%ADnez
  *
  * The token is unsigned — it only needs to be decodable by `atob`.
- * The `sub` claim is a UUID string consistent with `PATIENT_DIRECTORY`
- * and `PROFESSIONAL_DIRECTORY` in `appointment-user-display.ts`.
+ * The `sub` claim is a UUID string consistent with `fixtures/people.fixtures.ts`.
  */
 
 interface SeedOptions {
