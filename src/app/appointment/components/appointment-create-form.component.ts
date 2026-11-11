@@ -236,6 +236,7 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
       </section>
     </form>
   `,
+  styleUrl: '../appointment-theme.css',
   styles: [
     `
       :host {

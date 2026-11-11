@@ -31,8 +31,7 @@ import { StatusChangeDialogComponent } from '../components/status-change-dialog.
   ],
   templateUrl:
     './professional-appointment-list-page.component.html',
-  styleUrl:
-    './professional-appointment-list-page.component.css',
+  styleUrls: ['../appointment-theme.css', './professional-appointment-list-page.component.css'],
   changeDetection:
     ChangeDetectionStrategy.OnPush,
 })

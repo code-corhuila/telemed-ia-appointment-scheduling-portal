@@ -130,6 +130,7 @@ import type { ApiError } from '../model/api-error';
       </section>
     </form>
   `,
+  styleUrl: '../appointment-theme.css',
   styles: [
     `
       :host {
