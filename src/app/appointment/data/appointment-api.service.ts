@@ -8,6 +8,7 @@ import {
   RescheduleAppointmentPayload,
 } from '../model/appointment';
 import type { AppointmentStatus } from '../model/appointment';
+import type { AccountNames, ProfessionalListPage } from '../model/people';
 
 /**
  * TEMPORARY implementation.
@@ -25,6 +26,10 @@ import type { AppointmentStatus } from '../model/appointment';
  *   PATCH  /appointments/{id}/cancel         cancel
  *   PATCH  /appointments/{id}/reschedule     reschedule
  *   PATCH  /appointments/{id}/status         update status
+ *
+ * Names (appointments carry only account ids):
+ *   GET    /professionals                    professionals, with their names
+ *   GET    /auth/accounts/names?ids=         patient names (identity DEC-013)
  */
 @Injectable({ providedIn: 'root' })
 export class AppointmentApiService {
@@ -48,6 +53,22 @@ export class AppointmentApiService {
     const h = this.headers().set('Idempotency-Key', idempotencyKey);
     return this.http.post<Appointment>(`${this.baseUrl}/appointments/`, payload, {
       headers: h,
+    });
+  }
+
+  /** One page of up to 100 professionals; `fullName` comes from identity. */
+  listProfessionals(): Observable<ProfessionalListPage> {
+    return this.http.get<ProfessionalListPage>(`${this.baseUrl}/professionals`, {
+      headers: this.headers(),
+      params: { page: 1, limit: 100 },
+    });
+  }
+
+  /** Names of 1 to 50 accounts (identity DEC-013); unknown ids are left out. */
+  lookupAccountNames(accountIds: readonly string[]): Observable<AccountNames> {
+    return this.http.get<AccountNames>(`${this.baseUrl}/auth/accounts/names`, {
+      headers: this.headers(),
+      params: { ids: accountIds.join(',') },
     });
   }
 
