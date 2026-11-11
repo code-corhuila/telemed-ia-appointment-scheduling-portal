@@ -26,7 +26,7 @@ import {
     RouterLink,
   ],
   templateUrl: './professional-schedule-page.component.html',
-  styleUrl: './professional-schedule-page.component.css',
+  styleUrls: ['../appointment-theme.css', './professional-schedule-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfessionalSchedulePageComponent

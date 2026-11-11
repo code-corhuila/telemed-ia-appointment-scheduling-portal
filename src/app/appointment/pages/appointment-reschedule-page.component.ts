@@ -25,7 +25,7 @@ const UUID_PATTERN =
     AppointmentRescheduleFormComponent,
   ],
   templateUrl: './appointment-reschedule-page.component.html',
-  styleUrl: './appointment-reschedule-page.component.css',
+  styleUrls: ['../appointment-theme.css', './appointment-reschedule-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppointmentReschedulePageComponent implements OnInit {
