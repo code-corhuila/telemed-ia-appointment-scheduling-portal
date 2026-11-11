@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { SpanishDatePipe } from '../pipes/spanish-date.pipe';
 import { RouterLink } from '@angular/router';
 import { AppointmentApiService } from '../data/appointment-api.service';
 import {
@@ -26,6 +27,7 @@ import { StatusChangeDialogComponent } from '../components/status-change-dialog.
   standalone: true,
   imports: [
     DatePipe,
+    SpanishDatePipe,
     RouterLink,
     StatusChangeDialogComponent,
   ],
