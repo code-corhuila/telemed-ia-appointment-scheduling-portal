@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { SpanishDatePipe } from '../pipes/spanish-date.pipe';
 import { RouterLink } from '@angular/router';
 import { AppointmentApiService } from '../data/appointment-api.service';
 import type {
@@ -45,6 +46,7 @@ interface VM {
   standalone: true,
   imports: [
     DatePipe,
+    SpanishDatePipe,
     RouterLink,
     AppointmentCreateFormComponent,
     AppointmentRescheduleFormComponent,
