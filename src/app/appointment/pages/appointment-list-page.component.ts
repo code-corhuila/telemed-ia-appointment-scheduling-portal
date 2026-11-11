@@ -52,8 +52,7 @@ interface VM {
   ],
   templateUrl:
     './appointment-list-page.component.html',
-  styleUrl:
-    './appointment-list-page.component.css',
+  styleUrls: ['../appointment-theme.css', './appointment-list-page.component.css'],
   changeDetection:
     ChangeDetectionStrategy.OnPush,
 })
