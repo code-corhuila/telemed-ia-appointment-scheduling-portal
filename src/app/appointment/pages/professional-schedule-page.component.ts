@@ -15,8 +15,8 @@ import type { Appointment } from '../model/appointment';
 import {
   currentUserId,
   currentUserName,
-  patientName,
 } from '../data/appointment-user-display';
+import { PeopleDirectoryService } from '../data/people-directory.service';
 
 @Component({
   selector: 'app-professional-schedule-page',
@@ -34,6 +34,9 @@ export class ProfessionalSchedulePageComponent
 {
   private readonly api =
     inject(AppointmentApiService);
+
+  private readonly directory =
+    inject(PeopleDirectoryService);
 
   private readonly professionalId =
     currentUserId() ?? 'c0000000-0000-0000-0000-000000000002';
@@ -98,6 +101,10 @@ export class ProfessionalSchedulePageComponent
             page.data,
           );
 
+          this.directory.resolvePatients(
+            page.data.map((appointment) => appointment.patientId),
+          );
+
           this.loading.set(false);
         },
 
@@ -125,7 +132,7 @@ export class ProfessionalSchedulePageComponent
   protected patientDisplayName(
     patientId: string,
   ): string {
-    return patientName(patientId);
+    return this.directory.patientName(patientId);
   }
 
   protected statusLabel(

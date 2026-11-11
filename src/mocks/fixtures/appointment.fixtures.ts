@@ -14,7 +14,7 @@ import type {
  *   - `d0000000-...` preconsultation summaries
  *   - `e0000000-...` post-consultation summaries
  *
- * Coherent with `PROFESSIONAL_DIRECTORY` and `PATIENT_DIRECTORY`:
+ * Coherent with `people.fixtures.ts`:
  *   - Patient `b...001` = Juan Pérez, `b...002` = María García
  *   - Professionals `c...002..005` with the same names as the portal directory
  */
