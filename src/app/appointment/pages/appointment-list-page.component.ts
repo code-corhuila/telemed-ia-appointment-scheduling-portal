@@ -20,9 +20,8 @@ import { AppointmentRescheduleFormComponent } from '../components/appointment-re
 import { AppointmentCancelFormComponent } from '../components/appointment-cancel-form.component';
 import {
   currentUserId,
-  patientName,
-  professionalName,
 } from '../data/appointment-user-display';
+import { PeopleDirectoryService } from '../data/people-directory.service';
 
 type Action =
   | 'none'
@@ -63,6 +62,9 @@ export class AppointmentListPageComponent
 {
   private readonly api =
     inject(AppointmentApiService);
+
+  private readonly directory =
+    inject(PeopleDirectoryService);
 
   private readonly patientId =
     currentUserId() ?? 'b0000000-0000-0000-0000-000000000001';
@@ -155,13 +157,15 @@ export class AppointmentListPageComponent
     this.api
       .listByPatient(this.patientId)
       .subscribe({
-        next: (page) =>
+        next: (page) => {
           this.vm.update((s) => ({
             ...s,
             loading: false,
             error: null,
             appointments: page.data,
-          })),
+          }));
+          this.directory.resolveProfessionals();
+        },
 
         error: (err) => {
           const apiError: ApiError =
@@ -241,7 +245,7 @@ export class AppointmentListPageComponent
   protected professionalDisplayName(
     professionalId: string,
   ): string {
-    return professionalName(
+    return this.directory.professionalName(
       professionalId,
     );
   }
@@ -249,7 +253,7 @@ export class AppointmentListPageComponent
   protected patientDisplayName(
     patientId: string,
   ): string {
-    return patientName(patientId);
+    return this.directory.patientName(patientId);
   }
 
   protected statusLabel(
