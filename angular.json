@@ -87,7 +87,10 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "port": 4203,
-            "buildTarget": "telemed-ia-appointment-scheduling-portal:esbuild:mock"
+            "buildTarget": "telemed-ia-appointment-scheduling-portal:esbuild:mock",
+            "headers": {
+              "Access-Control-Allow-Origin": "http://localhost:4200"
+            }
           }
         }
       }

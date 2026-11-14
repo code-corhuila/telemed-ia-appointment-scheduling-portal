@@ -8,6 +8,7 @@ import {
   RescheduleAppointmentPayload,
 } from '../model/appointment';
 import type { AppointmentStatus } from '../model/appointment';
+import type { AccountNames, ProfessionalListPage } from '../model/people';
 
 /**
  * TEMPORARY implementation.
@@ -19,11 +20,16 @@ import type { AppointmentStatus } from '../model/appointment';
  *
  * Endpoints (contract `appointment-service.yaml`):
  *   POST   /appointments/                    create
+ *   GET    /appointments/{id}                get by id
  *   GET    /appointments/patient/{id}        list by patient (paginated)
  *   GET    /appointments/professional/{id}   list by professional (paginated)
  *   PATCH  /appointments/{id}/cancel         cancel
  *   PATCH  /appointments/{id}/reschedule     reschedule
  *   PATCH  /appointments/{id}/status         update status
+ *
+ * Names (appointments carry only account ids):
+ *   GET    /professionals                    professionals, with their names
+ *   GET    /auth/accounts/names?ids=         patient names (identity DEC-013)
  */
 @Injectable({ providedIn: 'root' })
 export class AppointmentApiService {
@@ -50,8 +56,31 @@ export class AppointmentApiService {
     });
   }
 
+  /** One page of up to 100 professionals; `fullName` comes from identity. */
+  listProfessionals(): Observable<ProfessionalListPage> {
+    return this.http.get<ProfessionalListPage>(`${this.baseUrl}/professionals`, {
+      headers: this.headers(),
+      params: { page: 1, limit: 100 },
+    });
+  }
+
+  /** Names of 1 to 50 accounts (identity DEC-013); unknown ids are left out. */
+  lookupAccountNames(accountIds: readonly string[]): Observable<AccountNames> {
+    return this.http.get<AccountNames>(`${this.baseUrl}/auth/accounts/names`, {
+      headers: this.headers(),
+      params: { ids: accountIds.join(',') },
+    });
+  }
+
+  getById(appointmentId: string): Observable<Appointment> {
+    return this.http.get<Appointment>(
+      `${this.baseUrl}/appointments/${appointmentId}`,
+      { headers: this.headers() },
+    );
+  }
+
   listByPatient(
-    patientId: number,
+    patientId: string,
     page = 1,
     limit = 20,
   ): Observable<Page<Appointment>> {
@@ -62,7 +91,7 @@ export class AppointmentApiService {
   }
 
   listByProfessional(
-    professionalId: number,
+    professionalId: string,
     page = 1,
     limit = 20,
   ): Observable<Page<Appointment>> {
@@ -72,7 +101,7 @@ export class AppointmentApiService {
     );
   }
 
-  cancel(appointmentId: number, reason: string): Observable<Appointment> {
+  cancel(appointmentId: string, reason: string): Observable<Appointment> {
     return this.http.patch<Appointment>(
       `${this.baseUrl}/appointments/${appointmentId}/cancel`,
       { reason },
@@ -81,7 +110,7 @@ export class AppointmentApiService {
   }
 
   reschedule(
-    appointmentId: number,
+    appointmentId: string,
     payload: RescheduleAppointmentPayload,
   ): Observable<Appointment> {
     return this.http.patch<Appointment>(
@@ -92,7 +121,7 @@ export class AppointmentApiService {
   }
 
   updateStatus(
-    appointmentId: number,
+    appointmentId: string,
     status: AppointmentStatus,
   ): Observable<Appointment> {
     return this.http.patch<Appointment>(
