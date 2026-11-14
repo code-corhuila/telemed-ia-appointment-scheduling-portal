@@ -14,6 +14,9 @@ import { AppointmentApiService } from '../data/appointment-api.service';
 import type { Appointment } from '../model/appointment';
 import { AppointmentRescheduleFormComponent } from '../components/appointment-reschedule-form.component';
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 @Component({
   selector: 'app-appointment-reschedule-page',
   standalone: true,
@@ -22,7 +25,7 @@ import { AppointmentRescheduleFormComponent } from '../components/appointment-re
     AppointmentRescheduleFormComponent,
   ],
   templateUrl: './appointment-reschedule-page.component.html',
-  styleUrl: './appointment-reschedule-page.component.css',
+  styleUrls: ['../appointment-theme.css', './appointment-reschedule-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppointmentReschedulePageComponent implements OnInit {
@@ -30,16 +33,14 @@ export class AppointmentReschedulePageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly api = inject(AppointmentApiService);
 
-  private readonly devPatientId = 1;
-
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly appointment = signal<Appointment | null>(null);
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
 
-    if (!Number.isInteger(id) || id <= 0) {
+    if (!UUID_PATTERN.test(id)) {
       this.loading.set(false);
       this.error.set('El identificador de la cita no es válido.');
       return;
@@ -48,30 +49,23 @@ export class AppointmentReschedulePageComponent implements OnInit {
     this.loadAppointment(id);
   }
 
-  private loadAppointment(id: number): void {
+  private loadAppointment(id: string): void {
     this.loading.set(true);
     this.error.set(null);
 
-    this.api.listByPatient(this.devPatientId).subscribe({
-      next: (page) => {
-        const found = page.data.find(
-          (appointment) => appointment.id === id,
-        );
-
-        if (!found) {
-          this.appointment.set(null);
-          this.error.set(
-            'No se encontró la cita o no pertenece al paciente actual.',
-          );
-          this.loading.set(false);
-          return;
-        }
-
-        this.appointment.set(found);
+    // The API checks that the appointment belongs to the signed-in user.
+    this.api.getById(id).subscribe({
+      next: (appointment) => {
+        this.appointment.set(appointment);
         this.loading.set(false);
       },
       error: (err) => {
         this.appointment.set(null);
+        if (err?.status === 403 || err?.status === 404) {
+          this.error.set('No se encontró la cita o no pertenece al paciente actual.');
+          this.loading.set(false);
+          return;
+        }
         this.error.set(
           err?.error?.message ??
             err?.message ??
