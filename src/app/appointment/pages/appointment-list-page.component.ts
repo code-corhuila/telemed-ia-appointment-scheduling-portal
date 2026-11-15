@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { SpanishDatePipe } from '../pipes/spanish-date.pipe';
 import { RouterLink } from '@angular/router';
 import { AppointmentApiService } from '../data/appointment-api.service';
 import type {
@@ -19,9 +20,8 @@ import { AppointmentRescheduleFormComponent } from '../components/appointment-re
 import { AppointmentCancelFormComponent } from '../components/appointment-cancel-form.component';
 import {
   currentUserId,
-  patientName,
-  professionalName,
 } from '../data/appointment-user-display';
+import { PeopleDirectoryService } from '../data/people-directory.service';
 
 type Action =
   | 'none'
@@ -45,6 +45,7 @@ interface VM {
   standalone: true,
   imports: [
     DatePipe,
+    SpanishDatePipe,
     RouterLink,
     AppointmentCreateFormComponent,
     AppointmentRescheduleFormComponent,
@@ -52,8 +53,7 @@ interface VM {
   ],
   templateUrl:
     './appointment-list-page.component.html',
-  styleUrl:
-    './appointment-list-page.component.css',
+  styleUrls: ['../appointment-theme.css', './appointment-list-page.component.css'],
   changeDetection:
     ChangeDetectionStrategy.OnPush,
 })
@@ -63,8 +63,11 @@ export class AppointmentListPageComponent
   private readonly api =
     inject(AppointmentApiService);
 
+  private readonly directory =
+    inject(PeopleDirectoryService);
+
   private readonly patientId =
-    currentUserId() ?? 1;
+    currentUserId() ?? 'b0000000-0000-0000-0000-000000000001';
 
   protected readonly vm = signal<VM>({
     loading: true,
@@ -154,13 +157,15 @@ export class AppointmentListPageComponent
     this.api
       .listByPatient(this.patientId)
       .subscribe({
-        next: (page) =>
+        next: (page) => {
           this.vm.update((s) => ({
             ...s,
             loading: false,
             error: null,
             appointments: page.data,
-          })),
+          }));
+          this.directory.resolveProfessionals();
+        },
 
         error: (err) => {
           const apiError: ApiError =
@@ -238,17 +243,17 @@ export class AppointmentListPageComponent
   }
 
   protected professionalDisplayName(
-    professionalId: number,
+    professionalId: string,
   ): string {
-    return professionalName(
+    return this.directory.professionalName(
       professionalId,
     );
   }
 
   protected patientDisplayName(
-    patientId: number,
+    patientId: string,
   ): string {
-    return patientName(patientId);
+    return this.directory.patientName(patientId);
   }
 
   protected statusLabel(

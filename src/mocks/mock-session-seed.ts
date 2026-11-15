@@ -7,6 +7,7 @@
  *   ?mockRole=PROFESSIONAL&mockId=2&mockName=Dra.%20Ana%20Mart%C3%ADnez
  *
  * The token is unsigned — it only needs to be decodable by `atob`.
+ * The `sub` claim is a UUID string consistent with `fixtures/people.fixtures.ts`.
  */
 
 interface SeedOptions {
@@ -22,12 +23,18 @@ function base64UrlEncode(input: string): string {
     .replace(/=+$/, '');
 }
 
+/** Deterministic UUID sub for mock tokens (b = patient, c = professional). */
+function toUUID(role: 'PATIENT' | 'PROFESSIONAL', n: number): string {
+  const prefix = role === 'PROFESSIONAL' ? 'c' : 'b';
+  return `${prefix}0000000-0000-0000-0000-${String(n).padStart(12, '0')}`;
+}
+
 function buildFakeJwt({ role, id, name }: SeedOptions): string {
   const header = base64UrlEncode(JSON.stringify({ alg: 'none', typ: 'JWT' }));
   const now = Math.floor(Date.now() / 1000);
   const payload = base64UrlEncode(
     JSON.stringify({
-      sub: String(id),
+      sub: toUUID(role, id),
       role,
       name,
       iat: now,

@@ -1,39 +1,5 @@
-export interface ProfessionalDisplay {
-  readonly id: number;
-  readonly name: string;
-  readonly specialty: string;
-}
-
-export const PROFESSIONAL_DIRECTORY: readonly ProfessionalDisplay[] = [
-  {
-    id: 2,
-    name: 'Dra. Ana Martínez',
-    specialty: 'Medicina General',
-  },
-  {
-    id: 3,
-    name: 'Dr. Roberto Silva',
-    specialty: 'Cardiología',
-  },
-  {
-    id: 4,
-    name: 'Dra. Luisa Fernández',
-    specialty: 'Dermatología',
-  },
-  {
-    id: 5,
-    name: 'Dr. Miguel Torres',
-    specialty: 'Pediatría',
-  },
-];
-
-const PATIENT_DIRECTORY: Readonly<Record<number, string>> = {
-  1: 'Juan Pérez',
-  2: 'María García',
-};
-
 interface JwtPayload {
-  readonly sub?: string | number;
+  readonly sub?: string;
   readonly name?: string;
   readonly role?: string;
 }
@@ -86,16 +52,17 @@ export function currentUserClaims(): JwtPayload | null {
   return decodePayload(token);
 }
 
-export function currentUserId(): number | null {
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function currentUserId(): string | null {
   const claims = currentUserClaims();
 
   if (!claims?.sub) {
     return null;
   }
 
-  const id = Number(claims.sub);
-
-  return Number.isInteger(id) && id > 0 ? id : null;
+  return UUID_PATTERN.test(claims.sub) ? claims.sub : null;
 }
 
 export function currentUserRole(): string | null {
@@ -109,48 +76,7 @@ export function currentUserName(): string {
     return claims.name;
   }
 
-  const id = currentUserId();
-
-  if (claims?.role === 'PROFESSIONAL' && id !== null) {
-    return professionalName(id);
-  }
-
-  if (claims?.role === 'PATIENT' && id !== null) {
-    return patientName(id);
-  }
-
   return claims?.role === 'PROFESSIONAL'
     ? 'Profesional'
     : 'Paciente';
-}
-
-export function professionalName(
-  professionalId: number,
-): string {
-  return (
-    PROFESSIONAL_DIRECTORY.find(
-      (professional) =>
-        professional.id === professionalId,
-    )?.name ?? `Profesional ${professionalId}`
-  );
-}
-
-export function professionalSpecialty(
-  professionalId: number,
-): string {
-  return (
-    PROFESSIONAL_DIRECTORY.find(
-      (professional) =>
-        professional.id === professionalId,
-    )?.specialty ?? 'Medicina General'
-  );
-}
-
-export function patientName(
-  patientId: number,
-): string {
-  return (
-    PATIENT_DIRECTORY[patientId] ??
-    `Paciente ${patientId}`
-  );
 }

@@ -194,10 +194,6 @@
   border-radius: var(--radius-pill);
 }
 
-.appointment-card__full {
-  grid-column: 1 / -1;
-}
-
 /* ---------- Empty ---------- */
 
 .empty-card {
@@ -310,10 +306,6 @@
 @media (max-width: 600px) {
   .appointment-card__actions {
     grid-template-columns: 1fr;
-  }
-
-  .appointment-card__full {
-    grid-column: auto;
   }
 
   .appointments__state {

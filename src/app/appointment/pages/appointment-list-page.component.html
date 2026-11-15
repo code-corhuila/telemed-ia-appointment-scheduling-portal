@@ -220,8 +220,7 @@
                   <span>
                     {{
                       appointment.start
-                        | date:
-                          "EEEE, d 'de' MMMM 'de' y"
+                        | spanishDate: 'long'
                     }}
                   </span>
                 </p>
@@ -289,9 +288,8 @@
               }
             </div>
 
+            <!-- A cancelled appointment is final (appointment decisions): no actions. -->
             @if (
-              appointment.status ===
-                'CANCELLED' ||
               appointment.status ===
                 'CONFIRMED' ||
               appointment.status ===
@@ -300,42 +298,27 @@
               <footer
                 class="appointment-card__actions"
               >
-                @if (
-                  appointment.status ===
-                  'CANCELLED'
-                ) {
-                  <a
-                    class="btn btn--outline-primary appointment-card__full"
-                    [routerLink]="[
-                      '/appointment/reschedule',
-                      appointment.id
-                    ]"
-                  >
-                    REAGENDAR
-                  </a>
-                } @else {
-                  <button
-                    type="button"
-                    class="btn btn--danger-outline"
-                    (click)="
-                      startCancel(
-                        appointment
-                      )
-                    "
-                  >
-                    CANCELAR
-                  </button>
+                <button
+                  type="button"
+                  class="btn btn--danger-outline"
+                  (click)="
+                    startCancel(
+                      appointment
+                    )
+                  "
+                >
+                  CANCELAR
+                </button>
 
-                  <a
-                    class="btn btn--primary"
-                    [routerLink]="[
-                      '/appointment/reschedule',
-                      appointment.id
-                    ]"
-                  >
-                    REPROGRAMAR
-                  </a>
-                }
+                <a
+                  class="btn btn--primary"
+                  [routerLink]="[
+                    '/appointment/reschedule',
+                    appointment.id
+                  ]"
+                >
+                  REPROGRAMAR
+                </a>
               </footer>
             }
           </article>

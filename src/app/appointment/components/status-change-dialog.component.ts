@@ -10,7 +10,7 @@ import { Appointment, AppointmentStatus } from '../model/appointment';
   selector: 'app-status-change-dialog',
   standalone: true,
   templateUrl: './status-change-dialog.component.html',
-  styleUrl: './status-change-dialog.component.css',
+  styleUrls: ['../appointment-theme.css', './status-change-dialog.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusChangeDialogComponent {

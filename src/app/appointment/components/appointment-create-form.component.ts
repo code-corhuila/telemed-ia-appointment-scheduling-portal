@@ -16,10 +16,11 @@ import {
 import { AppointmentApiService } from '../data/appointment-api.service';
 import type { ApiError } from '../model/api-error';
 import {
-  PROFESSIONAL_DIRECTORY,
   currentUserId,
   currentUserName,
 } from '../data/appointment-user-display';
+import { PeopleDirectoryService } from '../data/people-directory.service';
+import type { ProfessionalOption } from '../model/people';
 
 function futureStart(control: AbstractControl): ValidationErrors | null {
   const value = control.value as string | null;
@@ -103,7 +104,7 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
                   </option>
 
                   @for (
-                    professional of professionals;
+                    professional of professionals();
                     track professional.id
                   ) {
                     <option
@@ -114,6 +115,27 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
                     </option>
                   }
                 </select>
+
+                @if (professionalsState() === 'loading') {
+                  <span class="hint" role="status">
+                    Cargando profesionales…
+                  </span>
+                } @else if (professionalsState() === 'error') {
+                  <span class="error" role="alert">
+                    No se pudieron cargar los profesionales.
+                    <button
+                      type="button"
+                      class="link-button"
+                      (click)="loadProfessionals()"
+                    >
+                      Reintentar
+                    </button>
+                  </span>
+                } @else if (professionals().length === 0) {
+                  <span class="hint" role="status">
+                    Aún no hay profesionales disponibles.
+                  </span>
+                }
 
                 @if (
                   form.controls.professionalId.touched &&
@@ -172,27 +194,6 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
                 }
               </div>
 
-              <div class="field">
-                <label for="end">
-                  Fin
-                </label>
-
-                <input
-                  id="end"
-                  class="input"
-                  type="datetime-local"
-                  formControlName="end"
-                />
-
-                @if (
-                  form.controls.end.touched &&
-                  form.controls.end.invalid
-                ) {
-                  <span class="error">
-                    La fecha de fin es obligatoria.
-                  </span>
-                }
-              </div>
             </div>
           </div>
         </div>
@@ -257,6 +258,7 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
       </section>
     </form>
   `,
+  styleUrl: '../appointment-theme.css',
   styles: [
     `
       :host {
@@ -432,6 +434,22 @@ function futureStart(control: AbstractControl): ValidationErrors | null {
         font-weight: 600;
       }
 
+      .hint {
+        color: var(--color-muted);
+        font-size: 0.78rem;
+      }
+
+      .link-button {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--color-primary);
+        font: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
       .info-banner {
         display: flex;
         align-items: flex-start;
@@ -521,8 +539,14 @@ export class AppointmentCreateFormComponent {
   private readonly api =
     inject(AppointmentApiService);
 
+  private readonly directory =
+    inject(PeopleDirectoryService);
+
   protected readonly professionals =
-    PROFESSIONAL_DIRECTORY;
+    signal<readonly ProfessionalOption[]>([]);
+
+  protected readonly professionalsState =
+    signal<'loading' | 'ready' | 'error'>('loading');
 
   protected readonly currentPatientName =
     currentUserName();
@@ -538,20 +562,18 @@ export class AppointmentCreateFormComponent {
 
   protected readonly form =
     this.fb.group({
-      patientId: this.fb.control<number | null>(
+      patientId: this.fb.control<string | null>(
         currentUserId(),
         [
           Validators.required,
-          Validators.min(1),
         ],
       ),
 
       professionalId:
-        this.fb.control<number | null>(
+        this.fb.control<string | null>(
           null,
           [
             Validators.required,
-            Validators.min(1),
           ],
         ),
 
@@ -563,11 +585,22 @@ export class AppointmentCreateFormComponent {
         ],
       ),
 
-      end: this.fb.control<string | null>(
-        null,
-        [Validators.required],
-      ),
     });
+
+  constructor() {
+    this.loadProfessionals();
+  }
+
+  protected loadProfessionals(): void {
+    this.professionalsState.set('loading');
+    this.directory.professionals().subscribe({
+      next: (professionals) => {
+        this.professionals.set(professionals);
+        this.professionalsState.set('ready');
+      },
+      error: () => this.professionalsState.set('error'),
+    });
+  }
 
   protected submit(): void {
     if (
@@ -580,10 +613,9 @@ export class AppointmentCreateFormComponent {
     const raw = this.form.getRawValue();
 
     if (
-      raw.patientId === null ||
-      raw.professionalId === null ||
-      !raw.start ||
-      !raw.end
+      !raw.patientId ||
+      !raw.professionalId ||
+      !raw.start
     ) {
       return;
     }
@@ -598,9 +630,6 @@ export class AppointmentCreateFormComponent {
           professionalId: raw.professionalId,
           start: new Date(
             raw.start,
-          ).toISOString(),
-          end: new Date(
-            raw.end,
           ).toISOString(),
         },
         this.idempotencyKey,
@@ -622,6 +651,10 @@ export class AppointmentCreateFormComponent {
                 err?.message ??
                 'Unexpected error',
             };
+
+          if (apiError.code === 'PATIENT_SLOT_CONFLICT') {
+            apiError.message = 'Ya tienes una cita a esa hora. Por favor, elige otro horario.';
+          }
 
           this.serverError.set(apiError);
         },

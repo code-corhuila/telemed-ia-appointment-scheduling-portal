@@ -14,7 +14,7 @@ import { AppointmentCreateFormComponent } from '../components/appointment-create
     AppointmentCreateFormComponent,
   ],
   templateUrl: './appointment-book-page.component.html',
-  styleUrl: './appointment-book-page.component.css',
+  styleUrls: ['../appointment-theme.css', './appointment-book-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppointmentBookPageComponent {
